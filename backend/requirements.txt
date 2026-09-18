@@ -20,3 +20,5 @@ requests
 
 # ── Pydantic (bundled with FastAPI, pinned for safety) ────────
 pydantic
+
+python-multipart
