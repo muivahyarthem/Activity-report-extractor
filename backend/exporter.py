@@ -203,7 +203,7 @@ def check_file_collision(file_path: str) -> Dict[str, Any]:
     """
     Checks if target file already exists and returns its metadata for the conflict dialog.
     """
-    if not os.path.exists(file_path):
+    if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
         return {
             "exists": False,
             "file_name": os.path.basename(file_path),
@@ -218,16 +218,16 @@ def check_file_collision(file_path: str) -> Dict[str, Any]:
     if file_type == ".csv":
         try:
             with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                # 2 header rows in to_follow structure
-                total_lines = sum(1 for _ in f)
-                row_count = max(0, total_lines - 2)
+                reader = csv.reader(f)
+                total_rows = sum(1 for _ in reader)
+                row_count = max(0, total_rows - 2)
         except Exception:
             row_count = -1
     elif file_type in [".xlsx", ".xls"]:
         try:
             wb = openpyxl.load_workbook(file_path, read_only=True)
             ws = wb.active
-            # Count rows starting from row 3 (after 2 header rows)
+            # Count non-empty data rows starting from row 3 (after 2 header rows)
             data_rows = 0
             for row in ws.iter_rows(min_row=3, values_only=True):
                 if any(row):
@@ -254,18 +254,26 @@ def get_unique_filename(file_path: str) -> str:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     return f"{base}_{timestamp}{ext}"
 
-def export_csv(file_path: str, records: List[Dict[str, Any]], mode: str = "new") -> str:
+def export_csv(file_path: str, records: List[Dict[str, Any]], mode: str = "auto") -> str:
     """
     Exports records to CSV using the exact 28-column, 2-header-row structure of to_follow.xlsx.
-    mode: 'append' to append to existing, 'new' to write to new unique file.
+    If the file exists and is non-empty, it appends the new records without overwriting.
+    If the file does not exist, it creates a new file with headers.
     """
     target_path = file_path
-    if mode == "new" and os.path.exists(file_path):
+    if mode == "force_new_timestamp" and os.path.exists(file_path):
         target_path = get_unique_filename(file_path)
 
     os.makedirs(os.path.dirname(os.path.abspath(target_path)), exist_ok=True)
     
-    is_append = (mode == "append" and os.path.exists(target_path))
+    # Auto-detect append if file exists and has content
+    is_append = (
+        os.path.exists(target_path)
+        and os.path.getsize(target_path) > 0
+        and mode != "overwrite"
+        and mode != "force_new_timestamp"
+    )
+    
     start_sr = 1
     if is_append:
         # Ensure target file ends with newline so new row doesn't merge with last line
@@ -281,15 +289,17 @@ def export_csv(file_path: str, records: List[Dict[str, Any]], mode: str = "new")
 
         try:
             with open(target_path, "r", encoding="utf-8", errors="ignore") as f:
-                lines = [line for line in f if line.strip()]
-                total_data_lines = max(0, len(lines) - 2)
-                if total_data_lines > 0:
-                    last_line = lines[-1]
-                    first_cell = last_line.split(",")[0].strip().strip('"')
-                    try:
-                        start_sr = int(first_cell) + 1
-                    except ValueError:
-                        start_sr = total_data_lines + 1
+                rows = list(csv.reader(f))
+                # Row 0 is Section Groups, Row 1 is Sub-headers
+                data_rows = rows[2:] if len(rows) > 2 else []
+                if data_rows:
+                    last_row = data_rows[-1]
+                    if last_row:
+                        first_cell = str(last_row[0]).strip()
+                        try:
+                            start_sr = int(first_cell) + 1
+                        except ValueError:
+                            start_sr = len(data_rows) + 1
                 else:
                     start_sr = 1
         except Exception:
@@ -336,33 +346,50 @@ def apply_to_follow_header_styles(ws):
         cell.font = Font(name=font_name, size=font_size, bold=bold)
         cell.alignment = Alignment(horizontal=h_align, vertical=v_align, wrap_text=wrap)
 
-def export_excel(file_path: str, records: List[Dict[str, Any]], mode: str = "new") -> str:
+def export_excel(file_path: str, records: List[Dict[str, Any]], mode: str = "auto") -> str:
     """
     Exports records to Excel (.xlsx) exactly structured and styled like to_follow.xlsx.
-    mode: 'append' to append rows, 'new' to create fresh styled workbook.
+    If the file exists and is non-empty, it appends rows without overwriting.
+    If the file does not exist, it creates a fresh styled workbook.
     """
     target_path = file_path
-    if mode == "new" and os.path.exists(file_path):
+    if mode == "force_new_timestamp" and os.path.exists(file_path):
         target_path = get_unique_filename(file_path)
 
     os.makedirs(os.path.dirname(os.path.abspath(target_path)), exist_ok=True)
 
-    if mode == "append" and os.path.exists(target_path):
-        wb = openpyxl.load_workbook(target_path)
-        ws = wb.active
-        # Determine current max non-empty data row
-        last_data_row = 2
-        for r in range(3, ws.max_row + 1):
-            if any(ws.cell(r, c).value for c in range(1, 29)):
-                last_data_row = r
-        
-        # Determine starting serial number from previous row or count
-        last_sr_val = ws.cell(last_data_row, 1).value
+    # Auto-detect append if file exists and has content
+    is_append = (
+        os.path.exists(target_path)
+        and os.path.getsize(target_path) > 0
+        and mode != "overwrite"
+        and mode != "force_new_timestamp"
+    )
+
+    if is_append:
         try:
-            start_sr = int(str(last_sr_val).strip()) + 1
-        except (ValueError, TypeError):
-            start_sr = max(1, last_data_row - 2 + 1)
-        next_row = last_data_row + 1
+            wb = openpyxl.load_workbook(target_path)
+            ws = wb.active
+            # Determine current max non-empty data row
+            last_data_row = 2
+            for r in range(3, ws.max_row + 1):
+                if any(ws.cell(r, c).value for c in range(1, 29)):
+                    last_data_row = r
+            
+            # Determine starting serial number from previous row or count
+            last_sr_val = ws.cell(last_data_row, 1).value
+            try:
+                start_sr = int(str(last_sr_val).strip()) + 1
+            except (ValueError, TypeError):
+                start_sr = max(1, last_data_row - 2 + 1)
+            next_row = last_data_row + 1
+        except Exception:
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Sheet1"
+            apply_to_follow_header_styles(ws)
+            start_sr = 1
+            next_row = 3
     else:
         wb = openpyxl.Workbook()
         ws = wb.active

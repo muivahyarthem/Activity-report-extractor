@@ -369,15 +369,53 @@ def get_approved_documents(request: Request, response: Response):
 
 # ----------------- Routes: Export & Conflict Resolution -----------------
 
+@app.get("/api/export/system-locations")
+def get_system_locations():
+    """Returns common system locations to help user choose save location."""
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    locations = {
+        "project": {
+            "label": "Current Project Folder",
+            "path": project_root
+        },
+        "documents": {
+            "label": "Documents",
+            "path": os.path.normpath(os.path.expanduser("~/Documents"))
+        },
+        "desktop": {
+            "label": "Desktop",
+            "path": os.path.normpath(os.path.expanduser("~/Desktop"))
+        },
+        "downloads": {
+            "label": "Downloads",
+            "path": os.path.normpath(os.path.expanduser("~/Downloads"))
+        }
+    }
+    valid = {k: v for k, v in locations.items() if os.path.exists(v["path"])}
+    return {"locations": valid}
+
 class CollisionCheckRequest(BaseModel):
     filename: str
     file_type: str  # "csv" or "xlsx"
+    system_path: Optional[str] = None
+    save_dir: Optional[str] = None
 
 @app.post("/api/export/check-collision")
 def check_export_collision(payload: CollisionCheckRequest):
     ext = ".csv" if payload.file_type.lower() == "csv" else ".xlsx"
     clean_name = os.path.splitext(payload.filename)[0] + ext
-    target_path = os.path.join(EXPORTS_DIR, clean_name)
+    
+    if payload.system_path and payload.system_path.strip():
+        raw_path = os.path.expanduser(payload.system_path.strip())
+        if os.path.isdir(raw_path):
+            target_path = os.path.join(raw_path, clean_name)
+        else:
+            target_path = raw_path
+    elif payload.save_dir and payload.save_dir.strip():
+        target_path = os.path.join(os.path.expanduser(payload.save_dir.strip()), clean_name)
+    else:
+        target_path = os.path.join(EXPORTS_DIR, clean_name)
+
     collision_info = check_file_collision(target_path)
     return collision_info
 
@@ -395,13 +433,22 @@ async def export_local_file(request: Request, response: Response):
     existing_filename = None
     file_type = "xlsx"
     filename = "Activity_Reports_Export"
-    mode = "new"
+    mode = "auto"
+    system_path = None
+    save_dir = None
 
     if "multipart/form-data" in content_type:
         form = await request.form()
         filename = str(form.get("filename") or filename)
         file_type = str(form.get("file_type") or "xlsx").lower()
-        mode = str(form.get("mode") or "new")
+        mode = str(form.get("mode") or "auto")
+        system_path = form.get("system_path")
+        if system_path:
+            system_path = str(system_path).strip()
+        save_dir = form.get("save_dir")
+        if save_dir:
+            save_dir = str(save_dir).strip()
+
         uploaded = form.get("existing_file")
         if uploaded and hasattr(uploaded, "read") and getattr(uploaded, "filename", None):
             existing_file_bytes = await uploaded.read()
@@ -420,18 +467,44 @@ async def export_local_file(request: Request, response: Response):
             data = {}
         filename = data.get("filename", filename)
         file_type = data.get("file_type", "xlsx").lower()
-        mode = data.get("mode", "new")
+        mode = data.get("mode", "auto")
+        system_path = data.get("system_path")
+        save_dir = data.get("save_dir")
 
     ext = ".csv" if file_type == "csv" else ".xlsx"
     clean_name = os.path.splitext(filename)[0] + ext
-    target_path = os.path.join(EXPORTS_DIR, clean_name)
 
-    # If the user uploaded an existing file to append to
+    # Determine destination target_path
+    if system_path and str(system_path).strip():
+        clean_sys_path = os.path.expanduser(str(system_path).strip())
+        if os.path.isdir(clean_sys_path):
+            target_path = os.path.join(clean_sys_path, clean_name)
+        else:
+            target_path = clean_sys_path
+            # adjust ext / file_type based on target_path
+            t_ext = os.path.splitext(target_path)[1].lower()
+            if t_ext == ".csv":
+                file_type = "csv"
+                ext = ".csv"
+            elif t_ext in [".xlsx", ".xls"]:
+                file_type = "xlsx"
+                ext = ".xlsx"
+    elif save_dir and os.path.exists(os.path.expanduser(str(save_dir).strip())):
+        target_path = os.path.join(os.path.expanduser(str(save_dir).strip()), clean_name)
+    else:
+        target_path = os.path.join(EXPORTS_DIR, clean_name)
+
+    # Ensure parent directory exists
+    os.makedirs(os.path.dirname(os.path.abspath(target_path)), exist_ok=True)
+
+    # If the user uploaded an existing file from browser to append to
     if existing_file_bytes:
-        # Save existing file temporarily to target_path
         with open(target_path, "wb") as f:
             f.write(existing_file_bytes)
         mode = "append"
+
+    # Detect whether the file already existed before exporting
+    was_existing = os.path.exists(target_path) and os.path.getsize(target_path) > 0
 
     if ext == ".csv":
         final_path = export_csv(target_path, records, mode=mode)
@@ -439,12 +512,25 @@ async def export_local_file(request: Request, response: Response):
         final_path = export_excel(target_path, records, mode=mode)
 
     out_name = os.path.basename(final_path)
+
+    # Always keep a copy in EXPORTS_DIR so frontend can fetch or download it
+    exports_copy_path = os.path.join(EXPORTS_DIR, out_name)
+    if os.path.abspath(final_path) != os.path.abspath(exports_copy_path):
+        try:
+            shutil.copyfile(final_path, exports_copy_path)
+        except Exception:
+            pass
+
+    is_appended = was_existing or (mode == "append")
+
     return {
         "success": True,
         "exported_count": len(records),
         "file_name": out_name,
+        "saved_path": os.path.abspath(final_path),
+        "is_appended": is_appended,
         "download_url": f"/api/export/download/{out_name}",
-        "mode": mode
+        "mode": "append" if is_appended else "new"
     }
 
 @app.get("/api/export/download/{file_name}")
