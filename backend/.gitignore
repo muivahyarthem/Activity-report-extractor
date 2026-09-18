@@ -1,0 +1,9 @@
+# Ignore secrets & temp files
+credentials.json
+client_secret*.json
+.env
+.env.*
+__pycache__/
+*.py[cod]
+temp/*
+!temp/.gitkeep

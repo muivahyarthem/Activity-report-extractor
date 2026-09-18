@@ -104,14 +104,53 @@ def get_or_create_session(request: Request, response: Response) -> Dict[str, Any
     return SESSIONS[session_id]
 
 # ----------------- Google OAuth Config Loader -----------------
-GOOGLE_CLIENT_CONFIG = None
-CREDENTIALS_FILE = os.path.join(BASE_DIR, "credentials.json")
-if os.path.exists(CREDENTIALS_FILE):
-    try:
-        with open(CREDENTIALS_FILE, "r") as f:
-            GOOGLE_CLIENT_CONFIG = json.load(f)
-    except Exception as e:
-        print(f"Error loading credentials.json: {e}")
+def load_google_client_config() -> Optional[Dict[str, Any]]:
+    # 1. Check file paths (local backend folder, repo root, custom path, or Render secret file)
+    possible_paths = [
+        os.path.join(BASE_DIR, "credentials.json"),
+        os.path.join(REPO_ROOT, "credentials.json"),
+        os.environ.get("CREDENTIALS_FILE_PATH"),
+        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
+        "/etc/secrets/credentials.json",
+    ]
+    for p in possible_paths:
+        if p and os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    print(f"Loaded Google OAuth config from file: {p}")
+                    return cfg
+            except Exception as e:
+                print(f"Error reading credentials file {p}: {e}")
+
+    # 2. Raw JSON string from environment variable (useful on Render/cloud hosts)
+    env_json = os.environ.get("GOOGLE_CREDENTIALS_JSON") or os.environ.get("GOOGLE_CLIENT_CONFIG")
+    if env_json:
+        try:
+            cfg = json.loads(env_json)
+            print("Loaded Google OAuth config from GOOGLE_CREDENTIALS_JSON environment variable")
+            return cfg
+        except Exception as e:
+            print(f"Error parsing GOOGLE_CREDENTIALS_JSON: {e}")
+
+    # 3. Direct client ID & secret environment variables
+    client_id = os.environ.get("GOOGLE_CLIENT_ID")
+    client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+    if client_id and client_secret:
+        print("Constructed Google OAuth config from GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET")
+        return {
+            "web": {
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            }
+        }
+
+    return None
+
+GOOGLE_CLIENT_CONFIG = load_google_client_config()
 
 # ----------------- Routes: Auth -----------------
 
@@ -130,16 +169,20 @@ def auth_status(request: Request, response: Response):
     }
 
 @app.get("/api/auth/google/login")
-def google_login(account_type: str = "primary"):
+def google_login(account_type: str = "primary", request: Request = None):
     """
     Generates OAuth login URL. account_type can be 'primary' or 'secondary'.
     """
     if not GOOGLE_CLIENT_CONFIG:
         return JSONResponse(
             status_code=400,
-            content={"error": "credentials.json not found on server. Please add your Google OAuth client secrets."}
+            content={"error": "credentials.json not found on server. Please add credentials.json or configure GOOGLE_CREDENTIALS_JSON."}
         )
-    backend_url = os.environ.get("RENDER_BACKEND_URL", "http://localhost:8000").rstrip("/")
+    backend_url = os.environ.get("RENDER_BACKEND_URL")
+    if not backend_url and request:
+        backend_url = str(request.base_url).rstrip("/")
+    if not backend_url:
+        backend_url = "http://localhost:8000"
     redirect_uri = f"{backend_url}/api/auth/google/callback"
     flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
     auth_url, _ = flow.authorization_url(
@@ -153,7 +196,11 @@ def google_login(account_type: str = "primary"):
 def google_callback(code: str, state: str, request: Request, response: Response):
     if not GOOGLE_CLIENT_CONFIG:
         raise HTTPException(status_code=400, detail="Google credentials not configured.")
-    backend_url = os.environ.get("RENDER_BACKEND_URL", "http://localhost:8000").rstrip("/")
+    backend_url = os.environ.get("RENDER_BACKEND_URL")
+    if not backend_url and request:
+        backend_url = str(request.base_url).rstrip("/")
+    if not backend_url:
+        backend_url = "http://localhost:8000"
     redirect_uri = f"{backend_url}/api/auth/google/callback"
     flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
     flow.fetch_token(code=code)
