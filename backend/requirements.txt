@@ -1,0 +1,22 @@
+# ── Web Framework ─────────────────────────────────────────────
+fastapi
+uvicorn[standard]
+
+# ── Document Parsing ──────────────────────────────────────────
+python-docx          # .docx extraction
+pdfplumber           # PDF text / table extraction
+PyMuPDF              # PDF image extraction (import fitz)
+
+# ── Excel / CSV Export ────────────────────────────────────────
+openpyxl             # .xlsx read/write with styling
+
+# ── Google APIs ───────────────────────────────────────────────
+google-auth
+google-auth-oauthlib
+google-api-python-client
+
+# ── HTTP (used in OAuth callback for userinfo) ─────────────────
+requests
+
+# ── Pydantic (bundled with FastAPI, pinned for safety) ────────
+pydantic
