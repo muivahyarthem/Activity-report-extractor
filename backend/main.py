@@ -15,6 +15,8 @@ from exporter import check_file_collision, export_csv, export_excel, COMBINED_HE
 import google_service
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(BASE_DIR)
+FRONTEND_DIST = os.path.join(REPO_ROOT, "frontend", "dist")
 TEMP_DIR = os.path.join(BASE_DIR, "temp")
 UPLOADS_DIR = os.path.join(TEMP_DIR, "uploads")
 EXTRACTED_DIR = os.path.join(TEMP_DIR, "extracted")
@@ -36,6 +38,29 @@ app.add_middleware(
 
 # Static file serving for image thumbnails
 app.mount("/static/extracted", StaticFiles(directory=EXTRACTED_DIR), name="static_extracted")
+
+# ── Production: serve built React frontend ─────────────────────────────────────
+if os.path.isdir(FRONTEND_DIST):
+    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="frontend_assets")
+    app.mount("/icons.svg", StaticFiles(directory=FRONTEND_DIST), name="frontend_icons")
+    app.mount("/favicon.svg", StaticFiles(directory=FRONTEND_DIST), name="frontend_favicon")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    ico = os.path.join(FRONTEND_DIST, "favicon.svg")
+    if os.path.exists(ico):
+        return FileResponse(ico)
+    raise HTTPException(status_code=404)
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def spa_fallback(full_path: str):
+    """Return index.html for any non-API path so React Router works on Render."""
+    index = os.path.join(FRONTEND_DIST, "index.html")
+    if os.path.exists(index):
+        return FileResponse(index)
+    raise HTTPException(status_code=404, detail="Frontend not built. Run `npm run build` in the frontend folder.")
 
 # ----------------- In-Memory Session State (Zero Database) -----------------
 # Schema:

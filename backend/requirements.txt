@@ -1,6 +1,7 @@
 # ── Web Framework ─────────────────────────────────────────────
 fastapi
 uvicorn[standard]
+aiofiles             # required by FastAPI StaticFiles
 
 # ── Document Parsing ──────────────────────────────────────────
 python-docx          # .docx extraction
