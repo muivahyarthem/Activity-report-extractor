@@ -3,6 +3,7 @@ import {
   Check, Save, ArrowLeft, Image as ImageIcon,
   CheckCircle2, Tag, Loader2
 } from 'lucide-react';
+import { apiFetch, apiUrl } from '../api';
 
 /* ── Shared input components with fully inlined styles ── */
 function FieldLabel({ children }) {
@@ -83,7 +84,7 @@ export default function ReviewEditor({ docId, onBack, onDocApproved }) {
     if (!docId) return;
     setLoading(true);
     setSaveMsg('');
-    fetch(`/api/review/${docId}`)
+    apiFetch(`/api/review/${docId}`)
       .then(res => res.json())
       .then(data => {
         setDocData(data);
@@ -118,7 +119,7 @@ export default function ReviewEditor({ docId, onBack, onDocApproved }) {
   const handleSaveDraft = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`/api/review/${docId}`, {
+      const res = await apiFetch(`/api/review/${docId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields, images })
@@ -131,12 +132,12 @@ export default function ReviewEditor({ docId, onBack, onDocApproved }) {
   const handleApprove = async () => {
     setSaving(true);
     try {
-      await fetch(`/api/review/${docId}`, {
+      await apiFetch(`/api/review/${docId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields, images })
       });
-      const res = await fetch(`/api/review/${docId}/approve`, { method: 'POST' });
+      const res = await apiFetch(`/api/review/${docId}/approve`, { method: 'POST' });
       if (res.ok) onDocApproved(docId);
     } catch (e) { alert("Failed to approve document: " + e.message); }
     finally { setSaving(false); }
@@ -416,7 +417,7 @@ export default function ReviewEditor({ docId, onBack, onDocApproved }) {
                   <div key={img.id} className="border border-gray-200 rounded overflow-hidden bg-gray-50">
                     <div className="bg-gray-100 aspect-video flex items-center justify-center overflow-hidden">
                       <img
-                        src={img.web_url}
+                        src={apiUrl(img.web_url)}
                         alt={img.filename}
                         className="max-h-full max-w-full object-contain"
                         loading="lazy"

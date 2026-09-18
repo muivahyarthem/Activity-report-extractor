@@ -1,12 +1,13 @@
 import React from 'react';
 import { FileText, LogIn, LogOut, CheckCircle2, UserCheck, AlertCircle } from 'lucide-react';
+import { apiFetch } from '../api';
 
 export default function Navbar({ authStatus, onRefreshAuth, onLogout }) {
   const isAuth = authStatus?.is_authenticated;
   const primaryUser = authStatus?.primary_user;
 
   const handleLogin = (accountType = 'primary') => {
-    fetch(`/api/auth/google/login?account_type=${accountType}`)
+    apiFetch(`/api/auth/google/login?account_type=${accountType}`)
       .then(res => res.json())
       .then(data => {
         if (data.auth_url) window.location.href = data.auth_url;

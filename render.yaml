@@ -5,14 +5,10 @@ services:
     region: oregon
     plan: free
 
-    # Build: install Node, build frontend, then install Python deps
-    buildCommand: |
-      curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&
-      apt-get install -y nodejs &&
-      cd frontend && npm ci && npm run build && cd .. &&
-      pip install -r backend/requirements.txt
+    # Build backend dependencies
+    buildCommand: pip install -r backend/requirements.txt
 
-    # Start: run uvicorn from the backend folder
+    # Start FastAPI ASGI server
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
 
     envVars:

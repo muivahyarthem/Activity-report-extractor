@@ -27,47 +27,37 @@ for d in [UPLOADS_DIR, EXTRACTED_DIR, EXPORTS_DIR]:
 
 app = FastAPI(title="Document-to-Data Automation API")
 
-# Allow frontend CORS
+# Allow frontend CORS (supports local dev and any Vercel deployment URL)
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "https://activity-report-extractor.vercel.app",
+]
+env_frontend = os.environ.get("RENDER_FRONTEND_URL")
+if env_frontend and env_frontend not in origins:
+    origins.append(env_frontend.rstrip("/"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        # ── Production (Vercel) ──
-        "https://activity-report-extractor.vercel.app",
-        "https://activity-report-extractor-git-main.vercel.app",
-    ],
+    allow_origins=origins,
+    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["x-session-id", "Content-Disposition"],
 )
 
 # Static file serving for image thumbnails
 app.mount("/static/extracted", StaticFiles(directory=EXTRACTED_DIR), name="static_extracted")
 
-# ── Production: serve built React frontend ─────────────────────────────────────
-if os.path.isdir(FRONTEND_DIST):
-    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="frontend_assets")
-    app.mount("/icons.svg", StaticFiles(directory=FRONTEND_DIST), name="frontend_icons")
-    app.mount("/favicon.svg", StaticFiles(directory=FRONTEND_DIST), name="frontend_favicon")
-
-
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    ico = os.path.join(FRONTEND_DIST, "favicon.svg")
-    if os.path.exists(ico):
-        return FileResponse(ico)
-    raise HTTPException(status_code=404)
-
-
-@app.get("/{full_path:path}", include_in_schema=False)
-async def spa_fallback(full_path: str):
-    """Return index.html for any non-API path so React Router works on Render."""
-    index = os.path.join(FRONTEND_DIST, "index.html")
-    if os.path.exists(index):
-        return FileResponse(index)
-    raise HTTPException(status_code=404, detail="Frontend not built. Run `npm run build` in the frontend folder.")
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "Activity Report Extractor API",
+        "message": "API is up and running"
+    }
 
 # ----------------- In-Memory Session State (Zero Database) -----------------
 # Schema:
@@ -88,14 +78,29 @@ async def spa_fallback(full_path: str):
 SESSIONS: Dict[str, Dict[str, Any]] = {}
 
 def get_or_create_session(request: Request, response: Response) -> Dict[str, Any]:
-    session_id = request.cookies.get("session_id")
+    # Support both custom header (bulletproof across domains) and cookies
+    session_id = request.headers.get("x-session-id") or request.cookies.get("session_id")
     if not session_id or session_id not in SESSIONS:
         session_id = str(uuid.uuid4())
         SESSIONS[session_id] = {
             "documents": {},
             "google_auth": {}
         }
-        response.set_cookie(key="session_id", value=session_id, httponly=True, samesite="lax")
+
+    # Set cross-site cookie if possible (HTTPS in production)
+    try:
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            httponly=True,
+            samesite="none",
+            secure=True
+        )
+    except Exception:
+        pass
+
+    # Expose session ID in response header so frontend can store in localStorage
+    response.headers["x-session-id"] = session_id
     return SESSIONS[session_id]
 
 # ----------------- Google OAuth Config Loader -----------------

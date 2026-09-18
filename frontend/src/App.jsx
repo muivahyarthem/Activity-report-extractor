@@ -7,7 +7,7 @@ import ExportModal from './components/ExportModal';
 import ConflictModal from './components/ConflictModal';
 import CompletionSummary from './components/CompletionSummary';
 import { Upload, TableProperties, CheckCircle2 } from 'lucide-react';
-import { apiUrl } from './api';
+import { apiFetch, apiUrl } from './api';
 
 const TABS = [
   { id: 'queue', label: 'Upload & Queue', icon: Upload },
@@ -28,14 +28,14 @@ export default function App() {
   const [exportResult, setExportResult] = useState(null);
 
   const fetchAuthStatus = () => {
-    fetch(apiUrl('/api/auth/status'))
+    apiFetch('/api/auth/status')
       .then(res => res.json())
       .then(data => setAuthStatus(data))
       .catch(err => console.error("Error fetching auth:", err));
   };
 
   const fetchQueue = () => {
-    fetch(apiUrl('/api/documents/queue'))
+    apiFetch('/api/documents/queue')
       .then(res => res.json())
       .then(data => setQueue(data.documents || []))
       .catch(err => console.error("Error fetching queue:", err));
@@ -47,7 +47,7 @@ export default function App() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch(apiUrl('/api/auth/logout'), { method: 'POST' });
+    await apiFetch('/api/auth/logout', { method: 'POST' });
     fetchAuthStatus();
   };
 
@@ -57,7 +57,7 @@ export default function App() {
       formData.append('files', fileList[i]);
     }
     try {
-      const res = await fetch(apiUrl('/api/documents/upload'), { method: 'POST', body: formData });
+      const res = await apiFetch('/api/documents/upload', { method: 'POST', body: formData });
       if (res.ok) fetchQueue();
     } catch (e) {
       alert("Failed to upload files: " + e.message);
@@ -66,7 +66,7 @@ export default function App() {
 
   const handleRemoveDoc = async (docId) => {
     try {
-      await fetch(apiUrl(`/api/documents/${docId}`), { method: 'DELETE' });
+      await apiFetch(`/api/documents/${docId}`, { method: 'DELETE' });
       fetchQueue();
       if (selectedDocId === docId) {
         setSelectedDocId(null);
@@ -80,7 +80,7 @@ export default function App() {
   const handleStartExtraction = async () => {
     setIsProcessing(true);
     try {
-      const res = await fetch(apiUrl('/api/extract/run'), { method: 'POST' });
+      const res = await apiFetch('/api/extract/run', { method: 'POST' });
       if (res.ok) {
         fetchQueue();
         setActiveView('batch');
@@ -104,7 +104,7 @@ export default function App() {
 
   const handleApproveAll = async () => {
     try {
-      const res = await fetch(apiUrl('/api/review/approve-all'), { method: 'POST' });
+      const res = await apiFetch('/api/review/approve-all', { method: 'POST' });
       if (res.ok) fetchQueue();
     } catch (e) {
       alert("Error approving all: " + e.message);
@@ -113,7 +113,7 @@ export default function App() {
 
   const handleExportLocal = async (config) => {
     try {
-      const collisionRes = await fetch(apiUrl('/api/export/check-collision'), {
+      const collisionRes = await apiFetch('/api/export/check-collision', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: config.filename, file_type: config.file_type })
@@ -132,7 +132,7 @@ export default function App() {
 
   const executeLocalExport = async (config, mode) => {
     try {
-      const res = await fetch(apiUrl('/api/export/file'), {
+      const res = await apiFetch('/api/export/file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: config.filename, file_type: config.file_type, mode })
@@ -145,7 +145,7 @@ export default function App() {
         setExportResult({
           message: `Exported ${data.exported_count} approved records to ${data.file_name}.`,
           file_name: data.file_name,
-          download_url: data.download_url
+          download_url: apiUrl(data.download_url)
         });
         setActiveView('summary');
       } else {
@@ -158,7 +158,7 @@ export default function App() {
 
   const handleExportSheets = async (config) => {
     try {
-      const res = await fetch(apiUrl('/api/export/google/sheets/commit'), {
+      const res = await apiFetch('/api/export/google/sheets/commit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
@@ -181,7 +181,7 @@ export default function App() {
 
   const handleExportDriveImages = async (config) => {
     try {
-      const res = await fetch(apiUrl('/api/export/google/drive/images'), {
+      const res = await apiFetch('/api/export/google/drive/images', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
