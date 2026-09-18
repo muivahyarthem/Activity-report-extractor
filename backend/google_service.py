@@ -15,12 +15,16 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive.file"
 ]
 
-def get_oauth_flow(client_config: Dict[str, Any], redirect_uri: str) -> Flow:
+def get_oauth_flow(client_config: Dict[str, Any], redirect_uri: str, code_verifier: Optional[str] = None) -> Flow:
     flow = Flow.from_client_config(
         client_config=client_config,
         scopes=SCOPES,
         redirect_uri=redirect_uri
     )
+    if code_verifier:
+        flow.code_verifier = code_verifier
+    else:
+        flow.autogenerate_code_verifier = False
     return flow
 
 def get_credentials_from_dict(creds_dict: Dict[str, Any]) -> Credentials:

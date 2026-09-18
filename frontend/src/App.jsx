@@ -42,6 +42,12 @@ export default function App() {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlSessionId = params.get('session_id');
+    if (urlSessionId) {
+      localStorage.setItem('activity_extractor_session_id', urlSessionId);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
     fetchAuthStatus();
     fetchQueue();
   }, []);

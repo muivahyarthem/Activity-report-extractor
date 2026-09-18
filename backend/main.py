@@ -83,6 +83,7 @@ def get_or_create_session(request: Request, response: Response) -> Dict[str, Any
     if not session_id or session_id not in SESSIONS:
         session_id = str(uuid.uuid4())
         SESSIONS[session_id] = {
+            "id": session_id,
             "documents": {},
             "google_auth": {}
         }
@@ -103,7 +104,9 @@ def get_or_create_session(request: Request, response: Response) -> Dict[str, Any
     response.headers["x-session-id"] = session_id
     return SESSIONS[session_id]
 
-# ----------------- Google OAuth Config Loader -----------------
+# ----------------- Google OAuth Config Loader & State Store -----------------
+OAUTH_STATES: Dict[str, Dict[str, Any]] = {}
+
 def load_google_client_config() -> Optional[Dict[str, Any]]:
     # 1. Check file paths (local backend folder, repo root, custom path, or Render secret file)
     possible_paths = [
@@ -169,9 +172,10 @@ def auth_status(request: Request, response: Response):
     }
 
 @app.get("/api/auth/google/login")
-def google_login(account_type: str = "primary", request: Request = None):
+def google_login(account_type: str = "primary", request: Request = None, response: Response = None):
     """
     Generates OAuth login URL. account_type can be 'primary' or 'secondary'.
+    Preserves PKCE code_verifier and session across the OAuth cycle in the state parameter.
     """
     if not GOOGLE_CLIENT_CONFIG:
         return JSONResponse(
@@ -184,11 +188,37 @@ def google_login(account_type: str = "primary", request: Request = None):
     if not backend_url:
         backend_url = "http://localhost:8000"
     redirect_uri = f"{backend_url}/api/auth/google/callback"
-    flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
+
+    # Identify or create session
+    session = get_or_create_session(request, response) if (request and response) else None
+    session_id = request.headers.get("x-session-id") or (request.cookies.get("session_id") if request else None)
+    if session and not session_id:
+        session_id = session.get("id")
+
+    # Generate PKCE code verifier (RFC 7636 compliant)
+    import string
+    import random
+    chars = string.ascii_letters + string.digits + "-._~"
+    rnd = random.SystemRandom()
+    code_verifier = "".join(rnd.choice(chars) for _ in range(64))
+
+    # Initialize flow with explicit code_verifier
+    flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri, code_verifier=code_verifier)
+
+    # Encode state containing account_type, session_id, and code_verifier
+    import base64
+    state_payload = {
+        "account_type": account_type,
+        "session_id": session_id,
+        "code_verifier": code_verifier,
+    }
+    state_token = base64.urlsafe_b64encode(json.dumps(state_payload).encode()).decode()
+    OAUTH_STATES[state_token] = state_payload
+
     auth_url, _ = flow.authorization_url(
         access_type="offline",
         prompt="consent",
-        state=account_type
+        state=state_token
     )
     return {"auth_url": auth_url}
 
@@ -202,8 +232,33 @@ def google_callback(code: str, state: str, request: Request, response: Response)
     if not backend_url:
         backend_url = "http://localhost:8000"
     redirect_uri = f"{backend_url}/api/auth/google/callback"
-    flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
-    flow.fetch_token(code=code)
+
+    # Unpack state to recover account_type, code_verifier, and session_id
+    account_type = "primary"
+    code_verifier = None
+    session_id = None
+
+    if state in OAUTH_STATES:
+        stored_state = OAUTH_STATES.pop(state)
+        account_type = stored_state.get("account_type", "primary")
+        code_verifier = stored_state.get("code_verifier")
+        session_id = stored_state.get("session_id")
+    else:
+        try:
+            import base64
+            raw_state = base64.urlsafe_b64decode(state.encode()).decode()
+            state_data = json.loads(raw_state)
+            account_type = state_data.get("account_type", "primary")
+            code_verifier = state_data.get("code_verifier")
+            session_id = state_data.get("session_id")
+        except Exception:
+            account_type = state if state in ("primary", "secondary") else "primary"
+
+    flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri, code_verifier=code_verifier)
+    fetch_kwargs = {"code": code}
+    if code_verifier:
+        fetch_kwargs["code_verifier"] = code_verifier
+    flow.fetch_token(**fetch_kwargs)
     creds = flow.credentials
 
     # User profile lookup
@@ -219,8 +274,14 @@ def google_callback(code: str, state: str, request: Request, response: Response)
     except Exception:
         pass
 
-    session = get_or_create_session(request, response)
-    target_key = "secondary" if state == "secondary" else "primary"
+    # Retrieve existing session or initialize a new one
+    if session_id and session_id in SESSIONS:
+        session = SESSIONS[session_id]
+    else:
+        session = get_or_create_session(request, response)
+        session_id = session.get("id")
+
+    target_key = "secondary" if account_type == "secondary" else "primary"
     session["google_auth"][target_key] = {
         "token": creds.token,
         "refresh_token": creds.refresh_token,
@@ -233,9 +294,12 @@ def google_callback(code: str, state: str, request: Request, response: Response)
 
     # Redirect user back to frontend app
     frontend_url = os.environ.get("RENDER_FRONTEND_URL", "http://localhost:5173").rstrip("/")
+    redirect_target = f"{frontend_url}/?auth_success=1"
+    if session_id:
+        redirect_target += f"&session_id={session_id}"
     return Response(
         status_code=302,
-        headers={"Location": f"{frontend_url}/?auth_success=1"}
+        headers={"Location": redirect_target}
     )
 
 @app.post("/api/auth/logout")
