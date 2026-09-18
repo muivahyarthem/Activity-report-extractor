@@ -30,7 +30,14 @@ app = FastAPI(title="Document-to-Data Automation API")
 # Allow frontend CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        # ── Production (Vercel) ──
+        "https://activity-report-extractor.vercel.app",
+        "https://activity-report-extractor-git-main.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -127,7 +134,8 @@ def google_login(account_type: str = "primary"):
             status_code=400,
             content={"error": "credentials.json not found on server. Please add your Google OAuth client secrets."}
         )
-    redirect_uri = "http://localhost:8000/api/auth/google/callback"
+    backend_url = os.environ.get("RENDER_BACKEND_URL", "http://localhost:8000").rstrip("/")
+    redirect_uri = f"{backend_url}/api/auth/google/callback"
     flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
     auth_url, _ = flow.authorization_url(
         access_type="offline",
@@ -140,7 +148,8 @@ def google_login(account_type: str = "primary"):
 def google_callback(code: str, state: str, request: Request, response: Response):
     if not GOOGLE_CLIENT_CONFIG:
         raise HTTPException(status_code=400, detail="Google credentials not configured.")
-    redirect_uri = "http://localhost:8000/api/auth/google/callback"
+    backend_url = os.environ.get("RENDER_BACKEND_URL", "http://localhost:8000").rstrip("/")
+    redirect_uri = f"{backend_url}/api/auth/google/callback"
     flow = google_service.get_oauth_flow(GOOGLE_CLIENT_CONFIG, redirect_uri)
     flow.fetch_token(code=code)
     creds = flow.credentials
@@ -171,9 +180,10 @@ def google_callback(code: str, state: str, request: Request, response: Response)
     }
 
     # Redirect user back to frontend app
+    frontend_url = os.environ.get("RENDER_FRONTEND_URL", "http://localhost:5173").rstrip("/")
     return Response(
         status_code=302,
-        headers={"Location": "http://localhost:5173/?auth_success=1"}
+        headers={"Location": f"{frontend_url}/?auth_success=1"}
     )
 
 @app.post("/api/auth/logout")

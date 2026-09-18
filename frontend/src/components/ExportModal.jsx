@@ -3,6 +3,7 @@ import {
   FileSpreadsheet, HardDrive, Download, Eye, ExternalLink,
   Check, AlertCircle, X, Loader2, ChevronRight
 } from 'lucide-react';
+import { apiUrl } from '../api';
 
 export default function ExportModal({
   isOpen,
@@ -35,7 +36,7 @@ export default function ExportModal({
 
   useEffect(() => {
     if (activeTab === 'sheets' && sheetsDestType === 'existing' && authStatus?.is_authenticated) {
-      fetch(`/api/export/google/sheets/list?account=${sheetsAccount}`)
+      fetch(apiUrl(`/api/export/google/sheets/list?account=${sheetsAccount}`))
         .then(res => res.json())
         .then(data => {
           setExistingSheets(data.spreadsheets || []);
@@ -50,7 +51,7 @@ export default function ExportModal({
   const handlePreviewSheets = async () => {
     setPreviewLoading(true);
     try {
-      const res = await fetch('/api/export/google/sheets/preview', {
+      const res = await fetch(apiUrl('/api/export/google/sheets/preview'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
