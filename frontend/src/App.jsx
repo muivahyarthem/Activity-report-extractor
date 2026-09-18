@@ -176,7 +176,12 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (err) {
+        data = { detail: `Server responded with status ${res.status}` };
+      }
       if (res.ok) {
         setIsExportModalOpen(false);
         setExportResult({
@@ -185,10 +190,10 @@ export default function App() {
         });
         setActiveView('summary');
       } else {
-        alert("Sheets export failed: " + data.detail);
+        alert("Sheets export failed:\n\n" + (data.detail || "Server error"));
       }
     } catch (e) {
-      alert("Sheets export error: " + e.message);
+      alert("Sheets export error: " + e.message + "\n\nPlease ensure your backend is active on Render and Google Sheets API is enabled in Google Cloud Console.");
     }
   };
 
@@ -199,7 +204,12 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (err) {
+        data = { detail: `Server responded with status ${res.status}` };
+      }
       if (res.ok) {
         setIsExportModalOpen(false);
         setExportResult({
@@ -208,10 +218,10 @@ export default function App() {
         });
         setActiveView('summary');
       } else {
-        alert("Drive export error: " + data.detail);
+        alert("Drive export failed:\n\n" + (data.detail || "Server error"));
       }
     } catch (e) {
-      alert("Drive upload error: " + e.message);
+      alert("Drive upload error: " + e.message + "\n\nPlease ensure your backend is active on Render and Google Drive API is enabled in Google Cloud Console.");
     }
   };
 

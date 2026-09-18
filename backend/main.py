@@ -35,8 +35,12 @@ origins = [
     "https://activity-report-extractor.vercel.app",
 ]
 env_frontend = os.environ.get("RENDER_FRONTEND_URL")
-if env_frontend and env_frontend not in origins:
-    origins.append(env_frontend.rstrip("/"))
+if env_frontend:
+    env_frontend = env_frontend.strip().rstrip("/")
+    if not env_frontend.startswith("http://") and not env_frontend.startswith("https://"):
+        env_frontend = f"https://{env_frontend}"
+    if env_frontend not in origins:
+        origins.append(env_frontend)
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +51,36 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["x-session-id", "Content-Disposition"],
 )
+
+def get_cors_headers(request: Request) -> Dict[str, str]:
+    origin = request.headers.get("origin")
+    headers = {
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Expose-Headers": "x-session-id, Content-Disposition"
+    }
+    if origin:
+        headers["Access-Control-Allow-Origin"] = origin
+    return headers
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    headers = get_cors_headers(request)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=headers
+    )
+
+@app.exception_handler(Exception)
+async def custom_global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    headers = get_cors_headers(request)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Server error: {str(exc)}"},
+        headers=headers
+    )
 
 # Static file serving for image thumbnails
 app.mount("/static/extracted", StaticFiles(directory=EXTRACTED_DIR), name="static_extracted")
@@ -183,7 +217,11 @@ def google_login(account_type: str = "primary", request: Request = None, respons
             content={"error": "credentials.json not found on server. Please add credentials.json or configure GOOGLE_CREDENTIALS_JSON."}
         )
     backend_url = os.environ.get("RENDER_BACKEND_URL")
-    if not backend_url and request:
+    if backend_url:
+        backend_url = backend_url.strip().rstrip("/")
+        if not backend_url.startswith("http://") and not backend_url.startswith("https://"):
+            backend_url = f"https://{backend_url}"
+    elif request:
         backend_url = str(request.base_url).rstrip("/")
     if not backend_url:
         backend_url = "http://localhost:8000"
@@ -227,7 +265,11 @@ def google_callback(code: str, state: str, request: Request, response: Response)
     if not GOOGLE_CLIENT_CONFIG:
         raise HTTPException(status_code=400, detail="Google credentials not configured.")
     backend_url = os.environ.get("RENDER_BACKEND_URL")
-    if not backend_url and request:
+    if backend_url:
+        backend_url = backend_url.strip().rstrip("/")
+        if not backend_url.startswith("http://") and not backend_url.startswith("https://"):
+            backend_url = f"https://{backend_url}"
+    elif request:
         backend_url = str(request.base_url).rstrip("/")
     if not backend_url:
         backend_url = "http://localhost:8000"
@@ -293,8 +335,15 @@ def google_callback(code: str, state: str, request: Request, response: Response)
     }
 
     # Redirect user back to frontend app
-    frontend_url = os.environ.get("RENDER_FRONTEND_URL", "http://localhost:5173").rstrip("/")
-    redirect_target = f"{frontend_url}/?auth_success=1"
+    raw_frontend = os.environ.get("RENDER_FRONTEND_URL", "https://activity-report-extractor.vercel.app")
+    if raw_frontend:
+        raw_frontend = raw_frontend.strip().rstrip("/")
+        if not raw_frontend.startswith("http://") and not raw_frontend.startswith("https://"):
+            raw_frontend = f"https://{raw_frontend}"
+    else:
+        raw_frontend = "https://activity-report-extractor.vercel.app"
+
+    redirect_target = f"{raw_frontend}/?auth_success=1"
     if session_id:
         redirect_target += f"&session_id={session_id}"
     return Response(
@@ -703,27 +752,44 @@ def commit_sheets_export(payload: SheetsCommitRequest, request: Request, respons
     session = get_or_create_session(request, response)
     auth_data = session.get("google_auth", {}).get(payload.account)
     if not auth_data:
-        raise HTTPException(status_code=401, detail=f"Google account ({payload.account}) not connected.")
+        raise HTTPException(status_code=401, detail=f"Google account ({payload.account}) not connected. Please click Sign in with Google in the top bar.")
 
     approved_docs = [d for d in session["documents"].values() if d["status"] == "approved" and d.get("fields")]
     if not approved_docs:
-        raise HTTPException(status_code=400, detail="No approved documents to export.")
+        raise HTTPException(status_code=400, detail="No approved documents to export in your current session. Please extract and approve at least one document.")
 
     creds = google_service.get_credentials_from_dict(auth_data)
     records = [d["fields"] for d in approved_docs]
 
-    if payload.destination_type == "new":
-        title = payload.new_title or f"Activity Reports {datetime.now().strftime('%Y-%m-%d')}"
-        res = google_service.create_new_spreadsheet(creds, title)
-        sheet_id = res["spreadsheet_id"]
-        sheet_url = res["spreadsheet_url"]
-        google_service.append_to_spreadsheet(creds, sheet_id, records)
-    else:
-        if not payload.spreadsheet_id:
-            raise HTTPException(status_code=400, detail="Spreadsheet ID required for existing destination.")
-        sheet_id = payload.spreadsheet_id
-        sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit"
-        google_service.append_to_spreadsheet(creds, sheet_id, records)
+    try:
+        if payload.destination_type == "new":
+            title = payload.new_title or f"Activity Reports {datetime.now().strftime('%Y-%m-%d')}"
+            res = google_service.create_new_spreadsheet(creds, title)
+            sheet_id = res["spreadsheet_id"]
+            sheet_url = res["spreadsheet_url"]
+            google_service.append_to_spreadsheet(creds, sheet_id, records)
+        else:
+            if not payload.spreadsheet_id:
+                raise HTTPException(status_code=400, detail="Spreadsheet ID required for existing destination.")
+            sheet_id = payload.spreadsheet_id
+            sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit"
+            google_service.append_to_spreadsheet(creds, sheet_id, records)
+    except HTTPException:
+        raise
+    except Exception as e:
+        err_msg = str(e)
+        print(f"Google Sheets Export Error: {err_msg}")
+        if "has not been used in project" in err_msg or "disabled" in err_msg or "Google Sheets API" in err_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Google Sheets API is not enabled in your Google Cloud Console. Go to console.cloud.google.com > APIs & Services > Library, search for 'Google Sheets API', and click Enable."
+            )
+        elif "insufficient" in err_msg.lower() or "permission" in err_msg.lower():
+            raise HTTPException(
+                status_code=403,
+                detail="Insufficient Google permissions. Please click Sign Out in the top right, then Sign in with Google again to grant spreadsheet permissions."
+            )
+        raise HTTPException(status_code=500, detail=f"Google Sheets error: {err_msg}")
 
     return {
         "success": True,
@@ -743,28 +809,40 @@ def export_images_to_drive(payload: DriveExportRequest, request: Request, respon
     session = get_or_create_session(request, response)
     auth_data = session.get("google_auth", {}).get(payload.account)
     if not auth_data:
-        raise HTTPException(status_code=401, detail=f"Google account ({payload.account}) not connected.")
+        raise HTTPException(status_code=401, detail=f"Google account ({payload.account}) not connected. Please click Sign in with Google in the top bar.")
 
     approved_docs = [d for d in session["documents"].values() if d["status"] == "approved"]
     if not approved_docs:
-        raise HTTPException(status_code=400, detail="No approved documents found.")
+        raise HTTPException(status_code=400, detail="No approved documents found in your current session.")
 
     creds = google_service.get_credentials_from_dict(auth_data)
     drive_results = []
 
-    for doc in approved_docs:
-        images = doc.get("images", [])
-        if not images:
-            continue
-        event_name = doc.get("fields", {}).get("general_information", {}).get("title") or doc["filename"]
-        res = google_service.upload_images_to_drive(creds, event_name, images, year=payload.year)
-        drive_results.append({
-            "doc_id": doc["id"],
-            "event_name": event_name,
-            "folder_path": res["folder_path"],
-            "folder_id": res["folder_id"],
-            "uploaded_count": len(res["uploaded_images"])
-        })
+    try:
+        for doc in approved_docs:
+            images = doc.get("images", [])
+            if not images:
+                continue
+            event_name = doc.get("fields", {}).get("general_information", {}).get("title") or doc["filename"]
+            res = google_service.upload_images_to_drive(creds, event_name, images, year=payload.year)
+            drive_results.append({
+                "doc_id": doc["id"],
+                "event_name": event_name,
+                "folder_path": res["folder_path"],
+                "folder_id": res["folder_id"],
+                "uploaded_count": len(res["uploaded_images"])
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        err_msg = str(e)
+        print(f"Google Drive Export Error: {err_msg}")
+        if "has not been used in project" in err_msg or "disabled" in err_msg or "Google Drive API" in err_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Google Drive API is not enabled in your Google Cloud Console. Go to console.cloud.google.com > APIs & Services > Library, search for 'Google Drive API', and click Enable."
+            )
+        raise HTTPException(status_code=500, detail=f"Google Drive error: {err_msg}")
 
     return {
         "success": True,
