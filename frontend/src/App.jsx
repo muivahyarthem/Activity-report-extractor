@@ -6,22 +6,26 @@ import BatchTableReview from './components/BatchTableReview';
 import ExportModal from './components/ExportModal';
 import ConflictModal from './components/ConflictModal';
 import CompletionSummary from './components/CompletionSummary';
-import { Layers, FileSpreadsheet, CheckCircle2 } from 'lucide-react';
+import { Upload, TableProperties, CheckCircle2 } from 'lucide-react';
+
+const TABS = [
+  { id: 'queue', label: 'Upload & Queue', icon: Upload },
+  { id: 'batch', label: 'Batch Review', icon: TableProperties },
+];
 
 export default function App() {
   const [authStatus, setAuthStatus] = useState(null);
   const [queue, setQueue] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedDocId, setSelectedDocId] = useState(null);
-  const [activeView, setActiveView] = useState('queue'); // 'queue', 'batch', 'editor', 'summary'
-  
+  const [activeView, setActiveView] = useState('queue'); // 'queue' | 'batch' | 'editor' | 'summary'
+
   // Modals
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [collisionInfo, setCollisionInfo] = useState(null);
   const [pendingLocalExport, setPendingLocalExport] = useState(null);
   const [exportResult, setExportResult] = useState(null);
 
-  // Fetch Auth Status
   const fetchAuthStatus = () => {
     fetch('/api/auth/status')
       .then(res => res.json())
@@ -29,7 +33,6 @@ export default function App() {
       .catch(err => console.error("Error fetching auth:", err));
   };
 
-  // Fetch Queue
   const fetchQueue = () => {
     fetch('/api/documents/queue')
       .then(res => res.json())
@@ -52,15 +55,9 @@ export default function App() {
     for (let i = 0; i < fileList.length; i++) {
       formData.append('files', fileList[i]);
     }
-
     try {
-      const res = await fetch('/api/documents/upload', {
-        method: 'POST',
-        body: formData
-      });
-      if (res.ok) {
-        fetchQueue();
-      }
+      const res = await fetch('/api/documents/upload', { method: 'POST', body: formData });
+      if (res.ok) fetchQueue();
     } catch (e) {
       alert("Failed to upload files: " + e.message);
     }
@@ -107,32 +104,24 @@ export default function App() {
   const handleApproveAll = async () => {
     try {
       const res = await fetch('/api/review/approve-all', { method: 'POST' });
-      if (res.ok) {
-        fetchQueue();
-      }
+      if (res.ok) fetchQueue();
     } catch (e) {
       alert("Error approving all: " + e.message);
     }
   };
 
-  // Local File Export with Collision Detection
   const handleExportLocal = async (config) => {
     try {
       const collisionRes = await fetch('/api/export/check-collision', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: config.filename,
-          file_type: config.file_type
-        })
+        body: JSON.stringify({ filename: config.filename, file_type: config.file_type })
       });
       const collisionData = await collisionRes.json();
-
       if (collisionData.exists) {
         setCollisionInfo(collisionData);
         setPendingLocalExport(config);
       } else {
-        // Safe to write directly as new
         executeLocalExport(config, 'new');
       }
     } catch (e) {
@@ -145,11 +134,7 @@ export default function App() {
       const res = await fetch('/api/export/file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: config.filename,
-          file_type: config.file_type,
-          mode: mode
-        })
+        body: JSON.stringify({ filename: config.filename, file_type: config.file_type, mode })
       });
       const data = await res.json();
       if (res.ok) {
@@ -170,7 +155,6 @@ export default function App() {
     }
   };
 
-  // Google Sheets Export
   const handleExportSheets = async (config) => {
     try {
       const res = await fetch('/api/export/google/sheets/commit', {
@@ -194,7 +178,6 @@ export default function App() {
     }
   };
 
-  // Google Drive Images Export
   const handleExportDriveImages = async (config) => {
     try {
       const res = await fetch('/api/export/google/drive/images', {
@@ -219,68 +202,64 @@ export default function App() {
   };
 
   const approvedCount = queue.filter(d => d.status === 'approved').length;
+  const showTabs = activeView !== 'summary' && activeView !== 'editor';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f1f3f5] flex flex-col">
       <Navbar
         authStatus={authStatus}
         onRefreshAuth={fetchAuthStatus}
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        
-        {/* Navigation Tabs if not in summary or deep edit */}
-        {activeView !== 'summary' && activeView !== 'editor' && (
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setActiveView('queue')}
-                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  activeView === 'queue'
-                    ? 'bg-white border border-slate-300 text-slate-900 shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Upload & Queue</span>
-                {queue.length > 0 && (
-                  <span className="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px]">
-                    {queue.length}
-                  </span>
-                )}
-              </button>
+      {/* ── Secondary toolbar (tabs + export action) ── */}
+      {showTabs && (
+        <div className="bg-white border-b border-gray-200 sticky top-11 z-20 shadow-sm">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 flex items-center justify-between h-9">
+            {/* Tab navigation */}
+            <nav className="flex items-center h-full">
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveView(id)}
+                  className={`h-full flex items-center gap-1.5 px-3 text-xs font-medium border-b-2 transition-colors ${
+                    activeView === id
+                      ? 'border-[#1a3a5c] text-[#1a3a5c]'
+                      : 'border-transparent text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {label}
+                  {id === 'queue' && queue.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-semibold">
+                      {queue.length}
+                    </span>
+                  )}
+                  {id === 'batch' && approvedCount > 0 && (
+                    <span className="ml-1 flex items-center gap-0.5 px-1.5 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-semibold">
+                      <CheckCircle2 className="w-2.5 h-2.5" />
+                      {approvedCount}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
 
-              <button
-                onClick={() => setActiveView('batch')}
-                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  activeView === 'batch'
-                    ? 'bg-white border border-slate-300 text-slate-900 shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Batch Review</span>
-                {approvedCount > 0 && (
-                  <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold">
-                    {approvedCount} approved
-                  </span>
-                )}
-              </button>
-            </div>
-
+            {/* Export action */}
             {approvedCount > 0 && (
               <button
                 onClick={() => setIsExportModalOpen(true)}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-xs font-medium shadow-xs transition"
+                className="btn-primary"
               >
-                <span>Export Approved ({approvedCount})</span>
+                Export Approved ({approvedCount})
               </button>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* View Routing */}
+      {/* ── Page content ── */}
+      <main className="flex-1 max-w-screen-xl w-full mx-auto px-4 sm:px-6 py-4">
         {activeView === 'queue' && (
           <UploadQueue
             queue={queue}
@@ -321,7 +300,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Export Modal */}
+      {/* ── Modals ── */}
       <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
@@ -332,19 +311,10 @@ export default function App() {
         onExportDriveImages={handleExportDriveImages}
       />
 
-      {/* Existing File Conflict Dialog */}
       <ConflictModal
         collisionInfo={collisionInfo}
-        onAppend={() => {
-          if (pendingLocalExport) {
-            executeLocalExport(pendingLocalExport, 'append');
-          }
-        }}
-        onCreateNew={() => {
-          if (pendingLocalExport) {
-            executeLocalExport(pendingLocalExport, 'new');
-          }
-        }}
+        onAppend={() => pendingLocalExport && executeLocalExport(pendingLocalExport, 'append')}
+        onCreateNew={() => pendingLocalExport && executeLocalExport(pendingLocalExport, 'new')}
         onCancel={() => {
           setCollisionInfo(null);
           setPendingLocalExport(null);

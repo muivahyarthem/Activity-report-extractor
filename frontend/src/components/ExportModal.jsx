@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FileSpreadsheet, HardDrive, Download, Eye, ExternalLink, Check, AlertCircle, X } from 'lucide-react';
+import {
+  FileSpreadsheet, HardDrive, Download, Eye, ExternalLink,
+  Check, AlertCircle, X, Loader2, ChevronRight
+} from 'lucide-react';
 
 export default function ExportModal({
   isOpen,
@@ -10,15 +13,15 @@ export default function ExportModal({
   onExportSheets,
   onExportDriveImages
 }) {
-  const [activeTab, setActiveTab] = useState('local'); // 'local', 'sheets', 'drive'
+  const [activeTab, setActiveTab] = useState('local');
 
   // Local file state
   const [localFilename, setLocalFilename] = useState('Activity_Reports_Export');
-  const [localFileType, setLocalFileType] = useState('xlsx'); // 'xlsx' or 'csv'
+  const [localFileType, setLocalFileType] = useState('xlsx');
 
   // Google Sheets state
   const [sheetsAccount, setSheetsAccount] = useState('primary');
-  const [sheetsDestType, setSheetsDestType] = useState('new'); // 'new' or 'existing'
+  const [sheetsDestType, setSheetsDestType] = useState('new');
   const [newSheetTitle, setNewSheetTitle] = useState(`Activity Reports ${new Date().toISOString().slice(0, 10)}`);
   const [existingSheets, setExistingSheets] = useState([]);
   const [selectedSheetId, setSelectedSheetId] = useState('');
@@ -26,9 +29,8 @@ export default function ExportModal({
   const [previewLoading, setPreviewLoading] = useState(false);
 
   // Drive state
-  const [driveYear, setDriveYear] = useState('2026');
+  const [driveYear, setDriveYear] = useState(String(new Date().getFullYear()));
 
-  // Loading indicator
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -37,9 +39,7 @@ export default function ExportModal({
         .then(res => res.json())
         .then(data => {
           setExistingSheets(data.spreadsheets || []);
-          if (data.spreadsheets?.length > 0) {
-            setSelectedSheetId(data.spreadsheets[0].id);
-          }
+          if (data.spreadsheets?.length > 0) setSelectedSheetId(data.spreadsheets[0].id);
         })
         .catch(err => console.error(err));
     }
@@ -69,11 +69,7 @@ export default function ExportModal({
   };
 
   const handleCommitLocal = () => {
-    onExportLocal({
-      filename: localFilename,
-      file_type: localFileType,
-      mode: 'new'
-    });
+    onExportLocal({ filename: localFilename, file_type: localFileType, mode: 'new' });
   };
 
   const handleCommitSheets = async () => {
@@ -93,148 +89,143 @@ export default function ExportModal({
   const handleCommitDrive = async () => {
     setIsSubmitting(true);
     try {
-      await onExportDriveImages({
-        account: sheetsAccount,
-        year: driveYear
-      });
+      await onExportDriveImages({ account: sheetsAccount, year: driveYear });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const TABS = [
+    { id: 'local', label: 'Local File (xlsx / csv)', icon: Download },
+    { id: 'sheets', label: 'Google Sheets', icon: FileSpreadsheet },
+    { id: 'drive', label: 'Google Drive Images', icon: HardDrive },
+  ];
+
+  const AuthRequired = () => (
+    <div className="flex items-start gap-3 p-4 border border-amber-300 bg-amber-50 rounded text-xs">
+      <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
+      <div>
+        <div className="font-semibold text-gray-900 mb-0.5">Google Account Required</div>
+        <div className="text-gray-600">Sign in with Google using the button in the top navigation bar to enable this export destination.</div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl max-w-2xl w-full border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-        
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded border border-gray-300 max-w-2xl w-full shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
+
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-gray-50 shrink-0">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
-              Export Approved Records ({approvedCount} items)
+            <h3 className="text-sm font-semibold text-gray-900">
+              Export Approved Records
             </h3>
-            <p className="text-xs text-slate-500">
-              Choose your export destination and configure writing options
+            <p className="text-[11px] text-gray-500 mt-0.5">
+              {approvedCount} approved record{approvedCount !== 1 ? 's' : ''} · Choose destination and configure options
             </p>
           </div>
-          <button onClick={onClose} className="p-1 rounded text-slate-400 hover:text-slate-600">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-2 gap-2 text-xs">
-          <button
-            onClick={() => setActiveTab('local')}
-            className={`pb-2.5 px-3 font-medium border-b-2 transition ${
-              activeTab === 'local'
-                ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-lg'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Excel (.xlsx) / CSV
-          </button>
-          <button
-            onClick={() => setActiveTab('sheets')}
-            className={`pb-2.5 px-3 font-medium border-b-2 transition ${
-              activeTab === 'sheets'
-                ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-lg'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Google Sheets
-          </button>
-          <button
-            onClick={() => setActiveTab('drive')}
-            className={`pb-2.5 px-3 font-medium border-b-2 transition ${
-              activeTab === 'drive'
-                ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-lg'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Google Drive Images
-          </button>
+        {/* Tab navigation */}
+        <div className="flex border-b border-gray-200 shrink-0 overflow-x-auto">
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
+                activeTab === id
+                  ? 'border-[#1a3a5c] text-[#1a3a5c] bg-white'
+                  : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+            </button>
+          ))}
         </div>
 
-        {/* Tab Body */}
-        <div className="p-6 overflow-y-auto space-y-4 text-xs">
+        {/* Tab body */}
+        <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs">
 
-          {/* TAB 1: LOCAL FILE EXPORT */}
+          {/* ── TAB: Local File ── */}
           {activeTab === 'local' && (
             <div className="space-y-4">
               <div>
-                <label className="block font-medium text-slate-700 mb-1">File Name</label>
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                  File Name
+                </label>
                 <input
                   type="text"
                   value={localFilename}
                   onChange={(e) => setLocalFilename(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500 font-mono text-xs"
+                  className="form-input font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Format</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className={`border rounded-lg p-3 flex items-center space-x-3 cursor-pointer transition ${localFileType === 'xlsx' ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200'}`}>
-                    <input
-                      type="radio"
-                      name="fileType"
-                      checked={localFileType === 'xlsx'}
-                      onChange={() => setLocalFileType('xlsx')}
-                      className="text-indigo-600"
-                    />
-                    <div>
-                      <div className="font-semibold text-slate-900">Excel Workbook (.xlsx)</div>
-                      <div className="text-[11px] text-slate-500">Styled table with frozen headers</div>
-                    </div>
-                  </label>
-                  <label className={`border rounded-lg p-3 flex items-center space-x-3 cursor-pointer transition ${localFileType === 'csv' ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200'}`}>
-                    <input
-                      type="radio"
-                      name="fileType"
-                      checked={localFileType === 'csv'}
-                      onChange={() => setLocalFileType('csv')}
-                      className="text-indigo-600"
-                    />
-                    <div>
-                      <div className="font-semibold text-slate-900">Standard CSV (.csv)</div>
-                      <div className="text-[11px] text-slate-500">Universal comma-separated format</div>
-                    </div>
-                  </label>
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Export Format
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: 'xlsx', label: 'Excel Workbook (.xlsx)', desc: 'Styled table with frozen headers' },
+                    { id: 'csv', label: 'Standard CSV (.csv)', desc: 'Universal comma-separated format' },
+                  ].map(({ id, label, desc }) => (
+                    <label
+                      key={id}
+                      className={`flex items-start gap-2.5 border rounded p-3 cursor-pointer transition-colors ${
+                        localFileType === id ? 'border-[#1a3a5c] bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="fileType"
+                        checked={localFileType === id}
+                        onChange={() => setLocalFileType(id)}
+                        className="mt-0.5 accent-[#1a3a5c]"
+                      />
+                      <div>
+                        <div className="font-semibold text-gray-800">{label}</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">{desc}</div>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-3 text-[11px] text-slate-600">
-                <strong>Duplicate Protection:</strong> If a file named <span className="font-mono">{localFilename}.{localFileType}</span> already exists, an inspection dialog will prompt you to Append, create a New unique file, or Cancel.
+              <div className="p-3 border border-gray-200 bg-gray-50 rounded text-[11px] text-gray-600">
+                <strong>Duplicate Protection:</strong> If a file named{' '}
+                <code className="font-mono">{localFilename}.{localFileType}</code>{' '}
+                already exists, an inspection dialog will prompt you to Append, create a New unique file, or Cancel.
               </div>
 
-              <div className="pt-2">
-                <button
-                  onClick={handleCommitLocal}
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-xs transition flex items-center justify-center space-x-2"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Verify & Export Local File</span>
-                </button>
-              </div>
+              <button
+                onClick={handleCommitLocal}
+                className="w-full btn-primary justify-center py-2"
+              >
+                <Download className="w-4 h-4" />
+                Verify &amp; Export Local File
+              </button>
             </div>
           )}
 
-          {/* TAB 2: GOOGLE SHEETS */}
+          {/* ── TAB: Google Sheets ── */}
           {activeTab === 'sheets' && (
             <div className="space-y-4">
-              {!authStatus?.is_authenticated ? (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center space-y-2">
-                  <AlertCircle className="w-6 h-6 text-amber-600 mx-auto" />
-                  <div className="font-semibold text-slate-900">Google Account Required</div>
-                  <div className="text-slate-600">Sign in with Google from the top navigation bar to enable direct Sheets export.</div>
-                </div>
-              ) : (
+              {!authStatus?.is_authenticated ? <AuthRequired /> : (
                 <>
-                  {/* Account Selector */}
-                  <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <div>
-                      <span className="text-slate-500">Signed-in account:</span>
-                      <span className="font-semibold text-slate-800 ml-1">
+                  {/* Account indicator */}
+                  <div className="flex items-center justify-between p-3 border border-gray-200 bg-gray-50 rounded">
+                    <div className="text-[11px]">
+                      <span className="text-gray-500">Signed in as: </span>
+                      <span className="font-semibold text-gray-800">
                         {sheetsAccount === 'primary'
                           ? authStatus.primary_user?.email || 'Primary Account'
                           : authStatus.secondary_user?.email || 'Secondary Account'}
@@ -244,7 +235,7 @@ export default function ExportModal({
                       <select
                         value={sheetsAccount}
                         onChange={(e) => setSheetsAccount(e.target.value)}
-                        className="border border-slate-300 rounded px-2 py-1 bg-white text-xs"
+                        className="form-input w-auto ml-2"
                       >
                         <option value="primary">Primary Account</option>
                         <option value="secondary">Secondary Account</option>
@@ -252,96 +243,108 @@ export default function ExportModal({
                     )}
                   </div>
 
-                  {/* Destination Choice */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className={`border rounded-lg p-3 cursor-pointer transition ${sheetsDestType === 'new' ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200'}`}>
-                      <input
-                        type="radio"
-                        name="sheetDest"
-                        checked={sheetsDestType === 'new'}
-                        onChange={() => setSheetsDestType('new')}
-                        className="text-indigo-600 mr-2"
-                      />
-                      <span className="font-semibold text-slate-900">Create New Sheet</span>
+                  {/* Destination type */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Destination
                     </label>
-                    <label className={`border rounded-lg p-3 cursor-pointer transition ${sheetsDestType === 'existing' ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200'}`}>
-                      <input
-                        type="radio"
-                        name="sheetDest"
-                        checked={sheetsDestType === 'existing'}
-                        onChange={() => setSheetsDestType('existing')}
-                        className="text-indigo-600 mr-2"
-                      />
-                      <span className="font-semibold text-slate-900">Select Existing Sheet</span>
-                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'new', label: 'Create New Sheet' },
+                        { id: 'existing', label: 'Select Existing Sheet' }
+                      ].map(({ id, label }) => (
+                        <label
+                          key={id}
+                          className={`flex items-center gap-2.5 border rounded p-2.5 cursor-pointer transition-colors ${
+                            sheetsDestType === id ? 'border-[#1a3a5c] bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="sheetDest"
+                            checked={sheetsDestType === id}
+                            onChange={() => setSheetsDestType(id)}
+                            className="accent-[#1a3a5c]"
+                          />
+                          <span className="font-semibold text-gray-800">{label}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Target configuration */}
-                  {sheetsDestType === 'new' ? (
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">New Spreadsheet Title</label>
-                      <input
-                        type="text"
-                        value={newSheetTitle}
-                        onChange={(e) => setNewSheetTitle(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500 font-mono text-xs"
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Pick Spreadsheet from Drive</label>
-                      {existingSheets.length === 0 ? (
+                  {/* Target config */}
+                  <div>
+                    {sheetsDestType === 'new' ? (
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                          New Spreadsheet Title
+                        </label>
                         <input
                           type="text"
-                          placeholder="Enter Google Spreadsheet ID (e.g. 1BxiMVs0XRA5...)"
-                          value={selectedSheetId}
-                          onChange={(e) => setSelectedSheetId(e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500 font-mono text-xs"
+                          value={newSheetTitle}
+                          onChange={(e) => setNewSheetTitle(e.target.value)}
+                          className="form-input font-mono"
                         />
-                      ) : (
-                        <select
-                          value={selectedSheetId}
-                          onChange={(e) => setSelectedSheetId(e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500 text-xs"
-                        >
-                          {existingSheets.map(s => (
-                            <option key={s.id} value={s.id}>{s.name}</option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                          Spreadsheet
+                        </label>
+                        {existingSheets.length === 0 ? (
+                          <input
+                            type="text"
+                            placeholder="Enter Google Spreadsheet ID (e.g. 1BxiMVs0XRA5...)"
+                            value={selectedSheetId}
+                            onChange={(e) => setSelectedSheetId(e.target.value)}
+                            className="form-input font-mono"
+                          />
+                        ) : (
+                          <select
+                            value={selectedSheetId}
+                            onChange={(e) => setSelectedSheetId(e.target.value)}
+                            className="form-input"
+                          >
+                            {existingSheets.map(s => (
+                              <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
-                  {/* Preview Destination button */}
+                  {/* Preview */}
                   <div>
                     <button
                       onClick={handlePreviewSheets}
                       disabled={previewLoading}
-                      className="inline-flex items-center space-x-1.5 text-xs text-indigo-600 hover:text-indigo-800 font-medium py-1"
+                      className="btn-secondary"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>{previewLoading ? "Loading preview..." : "Preview Destination Layout"}</span>
+                      {previewLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
+                      {previewLoading ? 'Loading preview…' : 'Preview Destination Layout'}
                     </button>
                   </div>
 
-                  {/* Preview Table */}
                   {sheetsPreview && (
-                    <div className="border border-slate-200 rounded-lg p-3 bg-slate-50 space-y-2">
-                      <div className="font-semibold text-slate-700">Destination Column Preview:</div>
-                      <div className="overflow-x-auto max-h-36">
-                        <table className="text-[11px] border border-slate-300 w-full bg-white">
+                    <div className="border border-gray-200 rounded overflow-hidden">
+                      <div className="panel-header">
+                        <span className="panel-title">Destination Column Preview</span>
+                      </div>
+                      <div className="overflow-x-auto max-h-40">
+                        <table className="text-[10px] border-collapse w-full bg-white">
                           <thead>
-                            <tr className="bg-slate-100">
+                            <tr className="bg-gray-50">
                               {sheetsPreview.headers.map((h, i) => (
-                                <th key={i} className="border border-slate-200 p-1 font-semibold whitespace-nowrap">{h}</th>
+                                <th key={i} className="border border-gray-200 px-2 py-1 font-semibold whitespace-nowrap text-gray-700">{h}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
                             {sheetsPreview.preview_rows.map((r, ri) => (
-                              <tr key={ri}>
+                              <tr key={ri} className="hover:bg-gray-50">
                                 {r.map((c, ci) => (
-                                  <td key={ci} className="border border-slate-200 p-1 truncate max-w-[120px]">{c}</td>
+                                  <td key={ci} className="border border-gray-100 px-2 py-1 truncate max-w-[120px] text-gray-600">{c}</td>
                                 ))}
                               </tr>
                             ))}
@@ -351,35 +354,30 @@ export default function ExportModal({
                     </div>
                   )}
 
-                  <div className="pt-2">
-                    <button
-                      disabled={isSubmitting}
-                      onClick={handleCommitSheets}
-                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-xs transition flex items-center justify-center space-x-2"
-                    >
-                      <Check className="w-4 h-4" />
-                      <span>{isSubmitting ? "Writing to Sheets..." : "Write to Google Sheets"}</span>
-                    </button>
-                  </div>
+                  <button
+                    disabled={isSubmitting}
+                    onClick={handleCommitSheets}
+                    className="w-full btn-success justify-center py-2 disabled:opacity-50"
+                  >
+                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    {isSubmitting ? 'Writing to Sheets…' : 'Write to Google Sheets'}
+                  </button>
                 </>
               )}
             </div>
           )}
 
-          {/* TAB 3: GOOGLE DRIVE IMAGES */}
+          {/* ── TAB: Google Drive Images ── */}
           {activeTab === 'drive' && (
             <div className="space-y-4">
-              {!authStatus?.is_authenticated ? (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center space-y-2">
-                  <AlertCircle className="w-6 h-6 text-amber-600 mx-auto" />
-                  <div className="font-semibold text-slate-900">Google Account Required</div>
-                  <div className="text-slate-600">Sign in with Google from the top navigation bar to enable Drive image uploads.</div>
-                </div>
-              ) : (
+              {!authStatus?.is_authenticated ? <AuthRequired /> : (
                 <>
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
-                    <div className="font-semibold text-slate-800">Drive Folder Organization Architecture:</div>
-                    <div className="font-mono text-[11px] text-indigo-700 bg-white p-2 rounded border border-slate-200 leading-relaxed">
+                  {/* Folder structure */}
+                  <div className="border border-gray-200 rounded overflow-hidden">
+                    <div className="panel-header">
+                      <span className="panel-title">Drive Folder Architecture</span>
+                    </div>
+                    <div className="p-3 font-mono text-[11px] text-gray-700 leading-relaxed bg-gray-50">
                       Activity Reports / {driveYear} / &#123;Event_Name&#125; /<br />
                       &nbsp;&nbsp;├── Event_Poster/<br />
                       &nbsp;&nbsp;├── Photos/<br />
@@ -388,36 +386,34 @@ export default function ExportModal({
                   </div>
 
                   <div>
-                    <label className="block font-medium text-slate-700 mb-1">Academic Year</label>
+                    <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      Academic Year
+                    </label>
                     <input
                       type="text"
                       value={driveYear}
                       onChange={(e) => setDriveYear(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500 font-mono text-xs"
+                      className="form-input font-mono w-40"
                     />
                   </div>
 
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-gray-500">
                     Existing filenames and folder hierarchies are automatically inspected to avoid duplicate uploads.
                   </p>
 
-                  <div className="pt-2">
-                    <button
-                      disabled={isSubmitting}
-                      onClick={handleCommitDrive}
-                      className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-xs transition flex items-center justify-center space-x-2"
-                    >
-                      <HardDrive className="w-4 h-4" />
-                      <span>{isSubmitting ? "Uploading Images..." : "Upload Categorized Images to Google Drive"}</span>
-                    </button>
-                  </div>
+                  <button
+                    disabled={isSubmitting}
+                    onClick={handleCommitDrive}
+                    className="w-full btn-primary justify-center py-2 disabled:opacity-50"
+                  >
+                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <HardDrive className="w-4 h-4" />}
+                    {isSubmitting ? 'Uploading Images…' : 'Upload Categorized Images to Google Drive'}
+                  </button>
                 </>
               )}
             </div>
           )}
-
         </div>
-
       </div>
     </div>
   );
