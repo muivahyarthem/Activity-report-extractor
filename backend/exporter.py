@@ -268,10 +268,30 @@ def export_csv(file_path: str, records: List[Dict[str, Any]], mode: str = "new")
     is_append = (mode == "append" and os.path.exists(target_path))
     start_sr = 1
     if is_append:
+        # Ensure target file ends with newline so new row doesn't merge with last line
+        try:
+            with open(target_path, "rb+") as f:
+                f.seek(0, os.SEEK_END)
+                if f.tell() > 0:
+                    f.seek(-1, os.SEEK_END)
+                    if f.read(1) != b"\n":
+                        f.write(b"\n")
+        except Exception:
+            pass
+
         try:
             with open(target_path, "r", encoding="utf-8", errors="ignore") as f:
-                existing_lines = sum(1 for _ in f)
-                start_sr = max(1, existing_lines - 2 + 1)
+                lines = [line for line in f if line.strip()]
+                total_data_lines = max(0, len(lines) - 2)
+                if total_data_lines > 0:
+                    last_line = lines[-1]
+                    first_cell = last_line.split(",")[0].strip().strip('"')
+                    try:
+                        start_sr = int(first_cell) + 1
+                    except ValueError:
+                        start_sr = total_data_lines + 1
+                else:
+                    start_sr = 1
         except Exception:
             start_sr = 1
 
@@ -335,7 +355,13 @@ def export_excel(file_path: str, records: List[Dict[str, Any]], mode: str = "new
         for r in range(3, ws.max_row + 1):
             if any(ws.cell(r, c).value for c in range(1, 29)):
                 last_data_row = r
-        start_sr = max(1, last_data_row - 2 + 1)
+        
+        # Determine starting serial number from previous row or count
+        last_sr_val = ws.cell(last_data_row, 1).value
+        try:
+            start_sr = int(str(last_sr_val).strip()) + 1
+        except (ValueError, TypeError):
+            start_sr = max(1, last_data_row - 2 + 1)
         next_row = last_data_row + 1
     else:
         wb = openpyxl.Workbook()

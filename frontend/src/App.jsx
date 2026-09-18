@@ -112,48 +112,55 @@ export default function App() {
   };
 
   const handleExportLocal = async (config) => {
+    setIsProcessing(true);
     try {
-      const collisionRes = await apiFetch('/api/export/check-collision', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: config.filename, file_type: config.file_type })
-      });
-      const collisionData = await collisionRes.json();
-      if (collisionData.exists) {
-        setCollisionInfo(collisionData);
-        setPendingLocalExport(config);
-      } else {
-        executeLocalExport(config, 'new');
+      const formData = new FormData();
+      formData.append('filename', config.filename || 'Activity_Reports_Export');
+      formData.append('file_type', config.file_type || 'xlsx');
+      formData.append('mode', config.mode || 'new');
+      if (config.existing_file) {
+        formData.append('existing_file', config.existing_file);
       }
-    } catch (e) {
-      alert("Collision check error: " + e.message);
-    }
-  };
 
-  const executeLocalExport = async (config, mode) => {
-    try {
       const res = await apiFetch('/api/export/file', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: config.filename, file_type: config.file_type, mode })
+        body: formData,
       });
+
       const data = await res.json();
       if (res.ok) {
+        // Automatically trigger download directly to user's system
+        const downloadUrl = apiUrl(data.download_url);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = data.file_name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
         setIsExportModalOpen(false);
         setCollisionInfo(null);
         setPendingLocalExport(null);
         setExportResult({
-          message: `Exported ${data.exported_count} approved records to ${data.file_name}.`,
+          message: data.mode === 'append'
+            ? `Successfully appended ${data.exported_count} approved records to ${data.file_name} and saved to your system.`
+            : `Successfully generated ${data.file_name} with ${data.exported_count} approved records and saved to your system.`,
           file_name: data.file_name,
-          download_url: apiUrl(data.download_url)
+          download_url: downloadUrl
         });
         setActiveView('summary');
       } else {
-        alert("Export error: " + data.detail);
+        alert("Export error: " + (data.detail || "Failed to export."));
       }
     } catch (e) {
       alert("Export failed: " + e.message);
+    } finally {
+      setIsProcessing(false);
     }
+  };
+
+  const executeLocalExport = async (config, mode) => {
+    handleExportLocal({ ...config, mode });
   };
 
   const handleExportSheets = async (config) => {

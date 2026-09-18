@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FileSpreadsheet, HardDrive, Download, Eye, ExternalLink,
-  Check, AlertCircle, X, Loader2, ChevronRight
+  Check, AlertCircle, X, Loader2, ChevronRight, FilePlus,
+  UploadCloud, FileCheck
 } from 'lucide-react';
 import { apiFetch } from '../api';
 
@@ -17,8 +18,11 @@ export default function ExportModal({
   const [activeTab, setActiveTab] = useState('local');
 
   // Local file state
+  const [localMode, setLocalMode] = useState('append'); // 'append' | 'new'
+  const [existingFile, setExistingFile] = useState(null);
   const [localFilename, setLocalFilename] = useState('Activity_Reports_Export');
   const [localFileType, setLocalFileType] = useState('xlsx');
+  const fileInputRef = useRef(null);
 
   // Google Sheets state
   const [sheetsAccount, setSheetsAccount] = useState('primary');
@@ -48,6 +52,25 @@ export default function ExportModal({
 
   if (!isOpen) return null;
 
+  const handleFilePicked = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setExistingFile(file);
+      const ext = file.name.split('.').pop().toLowerCase();
+      setLocalFileType(ext === 'csv' ? 'csv' : 'xlsx');
+    }
+  };
+
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      setExistingFile(file);
+      const ext = file.name.split('.').pop().toLowerCase();
+      setLocalFileType(ext === 'csv' ? 'csv' : 'xlsx');
+    }
+  };
+
   const handlePreviewSheets = async () => {
     setPreviewLoading(true);
     try {
@@ -70,7 +93,24 @@ export default function ExportModal({
   };
 
   const handleCommitLocal = () => {
-    onExportLocal({ filename: localFilename, file_type: localFileType, mode: 'new' });
+    if (localMode === 'append') {
+      if (!existingFile) {
+        alert("Please select an existing .xlsx or .csv file from your computer to append to.");
+        return;
+      }
+      onExportLocal({
+        mode: 'append',
+        existing_file: existingFile,
+        filename: existingFile.name,
+        file_type: existingFile.name.toLowerCase().endsWith('.csv') ? 'csv' : 'xlsx'
+      });
+    } else {
+      onExportLocal({
+        mode: 'new',
+        filename: localFilename,
+        file_type: localFileType
+      });
+    }
   };
 
   const handleCommitSheets = async () => {
@@ -97,7 +137,7 @@ export default function ExportModal({
   };
 
   const TABS = [
-    { id: 'local', label: 'Local File (xlsx / csv)', icon: Download },
+    { id: 'local', label: 'Local File (Save to My PC)', icon: Download },
     { id: 'sheets', label: 'Google Sheets', icon: FileSpreadsheet },
     { id: 'drive', label: 'Google Drive Images', icon: HardDrive },
   ];
@@ -158,62 +198,163 @@ export default function ExportModal({
           {/* ── TAB: Local File ── */}
           {activeTab === 'local' && (
             <div className="space-y-4">
+              {/* Mode Selector */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                  File Name
-                </label>
-                <input
-                  type="text"
-                  value={localFilename}
-                  onChange={(e) => setLocalFilename(e.target.value)}
-                  className="form-input font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  Export Format
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                  Save Action
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'xlsx', label: 'Excel Workbook (.xlsx)', desc: 'Styled table with frozen headers' },
-                    { id: 'csv', label: 'Standard CSV (.csv)', desc: 'Universal comma-separated format' },
-                  ].map(({ id, label, desc }) => (
-                    <label
-                      key={id}
-                      className={`flex items-start gap-2.5 border rounded p-3 cursor-pointer transition-colors ${
-                        localFileType === id ? 'border-[#1a3a5c] bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="fileType"
-                        checked={localFileType === id}
-                        onChange={() => setLocalFileType(id)}
-                        className="mt-0.5 accent-[#1a3a5c]"
-                      />
-                      <div>
-                        <div className="font-semibold text-gray-800">{label}</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">{desc}</div>
-                      </div>
-                    </label>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setLocalMode('append')}
+                    className={`flex items-start gap-2.5 border rounded p-3 text-left transition-colors ${
+                      localMode === 'append' ? 'border-[#1a3a5c] bg-blue-50/50 ring-1 ring-[#1a3a5c]' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <FilePlus className={`w-4 h-4 mt-0.5 shrink-0 ${localMode === 'append' ? 'text-[#1a3a5c]' : 'text-gray-400'}`} />
+                    <div>
+                      <div className="font-semibold text-gray-800">Append to Existing File</div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Select a file from your system. Appends new rows below existing data without overwriting.</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocalMode('new')}
+                    className={`flex items-start gap-2.5 border rounded p-3 text-left transition-colors ${
+                      localMode === 'new' ? 'border-[#1a3a5c] bg-blue-50/50 ring-1 ring-[#1a3a5c]' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <Download className={`w-4 h-4 mt-0.5 shrink-0 ${localMode === 'new' ? 'text-[#1a3a5c]' : 'text-gray-400'}`} />
+                    <div>
+                      <div className="font-semibold text-gray-800">Create New File</div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Generates a fresh standalone Excel or CSV file and downloads it to your system.</div>
+                    </div>
+                  </button>
                 </div>
               </div>
 
-              <div className="p-3 border border-gray-200 bg-gray-50 rounded text-[11px] text-gray-600">
-                <strong>Duplicate Protection:</strong> If a file named{' '}
-                <code className="font-mono">{localFilename}.{localFileType}</code>{' '}
-                already exists, an inspection dialog will prompt you to Append, create a New unique file, or Cancel.
-              </div>
+              {/* Append Mode: Choose file from system */}
+              {localMode === 'append' && (
+                <div className="space-y-3">
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+                    Select File from Your Computer
+                  </label>
 
-              <button
-                onClick={handleCommitLocal}
-                className="w-full btn-primary justify-center py-2"
-              >
-                <Download className="w-4 h-4" />
-                Verify &amp; Export Local File
-              </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleFilePicked}
+                    className="hidden"
+                  />
+
+                  {!existingFile ? (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleFileDrop}
+                      className="border-2 border-dashed border-gray-300 hover:border-[#1a3a5c] bg-gray-50 hover:bg-blue-50/20 rounded-lg p-6 text-center cursor-pointer transition-colors"
+                    >
+                      <UploadCloud className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <div className="font-medium text-gray-800">Click to choose existing file from your system</div>
+                      <div className="text-[11px] text-gray-500 mt-1">Supports Excel (.xlsx) or CSV (.csv) · or drag and drop here</div>
+                    </div>
+                  ) : (
+                    <div className="border border-green-300 bg-green-50/40 rounded-lg p-3.5 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileCheck className="w-5 h-5 text-green-700 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="font-semibold text-gray-900 truncate">{existingFile.name}</div>
+                          <div className="text-[11px] text-gray-500">
+                            {(existingFile.size / 1024).toFixed(1)} KB · Ready to append {approvedCount} record{approvedCount !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="btn-secondary text-[11px] py-1 shrink-0"
+                      >
+                        Change File
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="p-3 border border-blue-200 bg-blue-50/40 rounded text-[11px] text-blue-900 leading-relaxed">
+                    <strong>✓ Safe Append Guarantee:</strong> Your approved records will be added directly after the last data row. Existing rows, headers, styling, and serial sequence will be preserved and <strong>not overwritten</strong>.
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCommitLocal}
+                    disabled={!existingFile}
+                    className={`w-full justify-center py-2.5 text-xs font-semibold ${
+                      existingFile ? 'btn-primary' : 'bg-gray-200 text-gray-400 cursor-not-allowed rounded'
+                    }`}
+                  >
+                    <Download className="w-4 h-4" />
+                    {existingFile ? `Append to ${existingFile.name} & Save to My System` : 'Select a File Above to Append'}
+                  </button>
+                </div>
+              )}
+
+              {/* New Mode: Specify filename and format */}
+              {localMode === 'new' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      File Name
+                    </label>
+                    <input
+                      type="text"
+                      value={localFilename}
+                      onChange={(e) => setLocalFilename(e.target.value)}
+                      className="form-input font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Export Format
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'xlsx', label: 'Excel Workbook (.xlsx)', desc: 'Styled table with frozen headers' },
+                        { id: 'csv', label: 'Standard CSV (.csv)', desc: 'Universal comma-separated format' },
+                      ].map(({ id, label, desc }) => (
+                        <label
+                          key={id}
+                          className={`flex items-start gap-2.5 border rounded p-3 cursor-pointer transition-colors ${
+                            localFileType === id ? 'border-[#1a3a5c] bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="fileType"
+                            checked={localFileType === id}
+                            onChange={() => setLocalFileType(id)}
+                            className="mt-0.5 accent-[#1a3a5c]"
+                          />
+                          <div>
+                            <div className="font-semibold text-gray-800">{label}</div>
+                            <div className="text-[11px] text-gray-500 mt-0.5">{desc}</div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCommitLocal}
+                    className="w-full btn-primary justify-center py-2.5 text-xs font-semibold"
+                  >
+                    <Download className="w-4 h-4" />
+                    Create &amp; Save to My System
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

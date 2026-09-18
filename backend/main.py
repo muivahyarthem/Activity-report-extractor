@@ -381,33 +381,70 @@ def check_export_collision(payload: CollisionCheckRequest):
     collision_info = check_file_collision(target_path)
     return collision_info
 
-class FileExportRequest(BaseModel):
-    filename: str
-    file_type: str  # "csv" or "xlsx"
-    mode: str = "new"  # "append" or "new"
-
 @app.post("/api/export/file")
-def export_local_file(payload: FileExportRequest, request: Request, response: Response):
+async def export_local_file(request: Request, response: Response):
     session = get_or_create_session(request, response)
     approved_docs = [d for d in session["documents"].values() if d["status"] == "approved" and d.get("fields")]
     if not approved_docs:
         raise HTTPException(status_code=400, detail="No approved documents to export.")
 
     records = [d["fields"] for d in approved_docs]
-    ext = ".csv" if payload.file_type.lower() == "csv" else ".xlsx"
-    clean_name = os.path.splitext(payload.filename)[0] + ext
+    content_type = request.headers.get("content-type", "")
+
+    existing_file_bytes = None
+    existing_filename = None
+    file_type = "xlsx"
+    filename = "Activity_Reports_Export"
+    mode = "new"
+
+    if "multipart/form-data" in content_type:
+        form = await request.form()
+        filename = str(form.get("filename") or filename)
+        file_type = str(form.get("file_type") or "xlsx").lower()
+        mode = str(form.get("mode") or "new")
+        uploaded = form.get("existing_file")
+        if uploaded and hasattr(uploaded, "read") and getattr(uploaded, "filename", None):
+            existing_file_bytes = await uploaded.read()
+            existing_filename = uploaded.filename
+            mode = "append"
+            ext = os.path.splitext(existing_filename)[1].lower()
+            if ext in [".xlsx", ".xls"]:
+                file_type = "xlsx"
+            elif ext == ".csv":
+                file_type = "csv"
+            filename = os.path.splitext(existing_filename)[0]
+    else:
+        try:
+            data = await request.json()
+        except Exception:
+            data = {}
+        filename = data.get("filename", filename)
+        file_type = data.get("file_type", "xlsx").lower()
+        mode = data.get("mode", "new")
+
+    ext = ".csv" if file_type == "csv" else ".xlsx"
+    clean_name = os.path.splitext(filename)[0] + ext
     target_path = os.path.join(EXPORTS_DIR, clean_name)
 
-    if ext == ".csv":
-        final_path = export_csv(target_path, records, mode=payload.mode)
-    else:
-        final_path = export_excel(target_path, records, mode=payload.mode)
+    # If the user uploaded an existing file to append to
+    if existing_file_bytes:
+        # Save existing file temporarily to target_path
+        with open(target_path, "wb") as f:
+            f.write(existing_file_bytes)
+        mode = "append"
 
+    if ext == ".csv":
+        final_path = export_csv(target_path, records, mode=mode)
+    else:
+        final_path = export_excel(target_path, records, mode=mode)
+
+    out_name = os.path.basename(final_path)
     return {
         "success": True,
         "exported_count": len(records),
-        "file_name": os.path.basename(final_path),
-        "download_url": f"/api/export/download/{os.path.basename(final_path)}"
+        "file_name": out_name,
+        "download_url": f"/api/export/download/{out_name}",
+        "mode": mode
     }
 
 @app.get("/api/export/download/{file_name}")
