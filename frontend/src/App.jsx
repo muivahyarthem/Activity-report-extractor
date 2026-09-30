@@ -57,17 +57,8 @@ export default function App() {
     fetchAuthStatus();
   };
 
-  const handleUploadFiles = async (fileList) => {
-    const formData = new FormData();
-    for (let i = 0; i < fileList.length; i++) {
-      formData.append('files', fileList[i]);
-    }
-    try {
-      const res = await apiFetch('/api/documents/upload', { method: 'POST', body: formData });
-      if (res.ok) fetchQueue();
-    } catch (e) {
-      alert("Failed to upload files: " + e.message);
-    }
+  const handleUploadSuccess = () => {
+    fetchQueue();
   };
 
   const handleRemoveDoc = async (docId) => {
@@ -287,7 +278,7 @@ export default function App() {
         {activeView === 'queue' && (
           <UploadQueue
             queue={queue}
-            onUploadFiles={handleUploadFiles}
+            onUploadSuccess={handleUploadSuccess}
             onRemoveDoc={handleRemoveDoc}
             onStartExtraction={handleStartExtraction}
             isProcessing={isProcessing}

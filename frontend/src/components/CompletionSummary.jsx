@@ -1,104 +1,131 @@
 import React from 'react';
-import { CheckCircle2, Download, ExternalLink, RefreshCw, FolderOpen } from 'lucide-react';
+import {
+  CheckCircle2, Download, ExternalLink, ArrowLeft,
+  FileSpreadsheet, HardDrive, Check
+} from 'lucide-react';
 
 export default function CompletionSummary({ result, onReset }) {
   if (!result) return null;
 
+  const isGoogleSheets = Boolean(result.spreadsheet_url);
+  const isLocalFile = Boolean(result.download_url);
+  const isDrive = Boolean(result.drive_results && result.drive_results.length > 0);
+
   return (
-    <div className="max-w-xl mx-auto">
-      <div className="panel overflow-hidden">
-        {/* Header */}
-        <div className="panel-header bg-green-50 border-b border-green-200">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0" />
-            <span className="panel-title text-green-800">Export Completed Successfully</span>
-          </div>
+    <div className="max-w-lg mx-auto py-10 px-4">
+      <div className="bg-white border border-gray-200/90 rounded-2xl shadow-sm p-6 sm:p-8 text-center">
+
+        {/* Clean success badge */}
+        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+          <Check className="w-7 h-7 stroke-[2.5]" />
         </div>
 
-        <div className="p-5 space-y-4">
-          {/* Message */}
-          <p className="text-xs text-gray-600 leading-relaxed">
-            {result.message || "Approved data has been safely processed and exported without data loss."}
-          </p>
+        {/* Heading */}
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+          Export Completed Successfully
+        </h2>
 
-          {/* Local download */}
-          {result.download_url && (
-            <div className="border border-gray-200 rounded p-3 flex items-center justify-between gap-3 bg-gray-50">
-              <div className="flex items-center gap-2 min-w-0">
-                <Download className="w-4 h-4 text-gray-500 shrink-0" />
-                <span className="text-xs font-medium text-gray-700 truncate">{result.file_name}</span>
+        {/* Informative message */}
+        <p className="text-sm text-gray-600 mt-2 max-w-sm mx-auto leading-relaxed">
+          {result.message || "Your approved records have been processed and saved successfully."}
+        </p>
+
+        {/* Google Sheets Card - Simple, clean, prominent */}
+        {isGoogleSheets && (
+          <div className="mt-6 p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/90 text-left space-y-3.5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100/90 text-emerald-700 flex items-center justify-center shrink-0 shadow-xs">
+                <FileSpreadsheet className="w-5 h-5" />
               </div>
-              <a
-                href={result.download_url}
-                download
-                className="btn-success shrink-0"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Download File
-              </a>
-            </div>
-          )}
-
-          {/* Google Sheets link */}
-          {result.spreadsheet_url && (
-            <div className="border border-gray-200 rounded p-3 flex items-center justify-between gap-3 bg-gray-50">
-              <div className="flex items-center gap-2 min-w-0">
-                <ExternalLink className="w-4 h-4 text-gray-500 shrink-0" />
-                <span className="text-xs font-medium text-gray-700 truncate">Google Spreadsheet ready</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
+                    Google Sheets
+                  </span>
+                  <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-emerald-200/80 text-emerald-800">
+                    Live
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-700 truncate mt-0.5">
+                  Records have been written in standard 28-column format
+                </p>
               </div>
-              <a
-                href={result.spreadsheet_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary shrink-0"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                Open in Google Sheets
-              </a>
             </div>
-          )}
 
-          {/* Drive results */}
-          {result.drive_results && result.drive_results.length > 0 && (
-            <div className="border border-gray-200 rounded overflow-hidden">
-              <div className="px-3 py-2 border-b border-gray-200 bg-gray-50 flex items-center gap-1.5">
-                <FolderOpen className="w-3.5 h-3.5 text-gray-500" />
-                <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide">
-                  Google Drive Upload Results
-                </span>
-              </div>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
-                    <th className="py-1.5 px-3 text-left">Event Name</th>
-                    <th className="py-1.5 px-3 text-center">Images Uploaded</th>
-                    <th className="py-1.5 px-3 text-left">Folder Path</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {result.drive_results.map((res, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="py-2 px-3 font-medium text-gray-800">{res.event_name}</td>
-                      <td className="py-2 px-3 text-center text-gray-600 tabular-nums">{res.uploaded_count}</td>
-                      <td className="py-2 px-3 text-gray-400 font-mono text-[10px]">{res.folder_path}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Return action */}
-          <div className="pt-2 border-t border-gray-100 flex justify-end">
-            <button
-              onClick={onReset}
-              className="btn-secondary"
+            <a
+              href={result.spreadsheet_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#0f9d58] hover:bg-[#0b8043] active:bg-[#096e38] text-white text-sm font-semibold py-2.5 px-4 rounded-lg shadow-sm hover:shadow transition-all"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Return to Dashboard
-            </button>
+              <ExternalLink className="w-4 h-4" />
+              Open in Google Sheets
+            </a>
           </div>
+        )}
+
+        {/* Local Download Card */}
+        {isLocalFile && (
+          <div className="mt-6 p-4 rounded-xl bg-blue-50/60 border border-blue-200/90 text-left space-y-3.5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-100/90 text-blue-700 flex items-center justify-center shrink-0 shadow-xs">
+                <Download className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-blue-950 uppercase tracking-wider">
+                  Local File Ready
+                </p>
+                <p className="text-xs text-blue-700 font-mono truncate mt-0.5" title={result.file_name}>
+                  {result.file_name}
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={result.download_url}
+              download
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#1a3a5c] hover:bg-[#14304f] active:bg-[#0d2138] text-white text-sm font-semibold py-2.5 px-4 rounded-lg shadow-sm hover:shadow transition-all"
+            >
+              <Download className="w-4 h-4" />
+              Download {result.file_name}
+            </a>
+          </div>
+        )}
+
+        {/* Google Drive Upload Results */}
+        {isDrive && (
+          <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-200 text-left space-y-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <HardDrive className="w-4 h-4 text-[#1a3a5c]" />
+              Google Drive Upload Summary
+            </div>
+            <div className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
+              {result.drive_results.map((res, i) => (
+                <div key={i} className="py-2 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <p className="font-semibold text-gray-800 truncate">{res.event_name}</p>
+                    <p className="text-[11px] text-gray-500 font-mono truncate">{res.folder_path}</p>
+                  </div>
+                  <span className="shrink-0 px-2 py-0.5 bg-gray-200/80 text-gray-700 rounded text-[11px] font-medium">
+                    {res.uploaded_count} image{res.uploaded_count !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Clean footer action */}
+        <div className="mt-8 pt-5 border-t border-gray-100 flex justify-center">
+          <button
+            onClick={onReset}
+            className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-50 active:bg-gray-100 border border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg transition-colors shadow-xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to Document Queue
+          </button>
         </div>
+
       </div>
     </div>
   );

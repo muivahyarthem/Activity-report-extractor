@@ -45,9 +45,20 @@ function useUploadWithProgress(onDone) {
     xhr.onload = () => {
       setProgress(null);
       if (xhr.status >= 200 && xhr.status < 300) {
-        onDone();
+        const returnedSessionId = xhr.getResponseHeader('x-session-id');
+        if (returnedSessionId) {
+          localStorage.setItem('activity_extractor_session_id', returnedSessionId);
+        }
+        if (typeof onDone === 'function') {
+          onDone();
+        }
       } else {
-        alert('Upload failed: ' + xhr.statusText);
+        try {
+          const errData = JSON.parse(xhr.responseText);
+          alert('Upload failed: ' + (errData.detail || xhr.statusText));
+        } catch {
+          alert('Upload failed: ' + (xhr.statusText || 'Server error'));
+        }
       }
     };
 
@@ -64,12 +75,20 @@ function useUploadWithProgress(onDone) {
 }
 
 export default function UploadQueue({
-  queue, onUploadFiles, onRemoveDoc, onStartExtraction, isProcessing, onSelectDoc
+  queue, onUploadSuccess, onUploadFiles, onRemoveDoc, onStartExtraction, isProcessing, onSelectDoc
 }) {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const { progress, upload } = useUploadWithProgress(onUploadFiles);
+  const handleDone = () => {
+    if (typeof onUploadSuccess === 'function') {
+      onUploadSuccess();
+    } else if (typeof onUploadFiles === 'function') {
+      onUploadFiles();
+    }
+  };
+
+  const { progress, upload } = useUploadWithProgress(handleDone);
 
   const handleDrop = (e) => {
     e.preventDefault();
