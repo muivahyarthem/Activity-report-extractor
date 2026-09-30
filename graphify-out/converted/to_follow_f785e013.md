@@ -1,0 +1,15 @@
+<!-- converted from to_follow.xlsx -->
+
+## Sheet: Sheet1
+| Sr | NAAC  |  |  | Strategic Plan  |  |  | Gradguate Attribute |  |  | General Information : |  |  |  |  |  | Speaker/Guest/Presenter Details : |  |  |  | Participant’s profile : |  | Synopsis of the Activity (Description): |  |  |  | Rapporteur Details: |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  | Criteria/ Focus Area
+Standard No. | Sub Criteria/ 
+Standard No | Sub-Criteria/ 
+Standard Title | Criteria/ Focus Area
+Standard No. | Sub Criteria/ 
+Standard No | Sub-Criteria/ 
+Standard Title | Criteria/ Focus Area
+Standard No. | Sub Criteria/ 
+Standard No | Sub-Criteria/ 
+Standard Title | Type of Activity  | Title of the Activity  | Date/s  | Time  | Venue  |     Collaboration/Sponsor  (if any)  | Name  | Title/Position  | Organization  | Title of Presentation  | Type of Participants  | No. of Participants | Highlights of the Activity | Key Objectives/Takeaways | Summary of the Activity | Follow-up Plan, if any  | Name of the Rapporteur  | Email and Contact No  |

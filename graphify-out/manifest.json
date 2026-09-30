@@ -1,0 +1,1262 @@
+{
+  "backend/exporter.py": {
+    "mtime": 1789728018.069633,
+    "seen": 1789889100.9049797,
+    "ast_hash": "e5e319fcdbdef619c40003da858a19e3",
+    "semantic_hash": "e5e319fcdbdef619c40003da858a19e3"
+  },
+  "backend/extractor.py": {
+    "mtime": 1789653578.3807392,
+    "seen": 1789889100.9049797,
+    "ast_hash": "df35580d1571c638a770ed852ce5078c",
+    "semantic_hash": "df35580d1571c638a770ed852ce5078c"
+  },
+  "backend/google_service.py": {
+    "mtime": 1789731866.5063083,
+    "seen": 1789889100.9049797,
+    "ast_hash": "d6cde817276ecf2f35feee8624294f5d",
+    "semantic_hash": "d6cde817276ecf2f35feee8624294f5d"
+  },
+  "backend/main.py": {
+    "mtime": 1789733180.1488438,
+    "seen": 1789889100.9049797,
+    "ast_hash": "d97519227aa16ed53a102b28359dab4a",
+    "semantic_hash": "d97519227aa16ed53a102b28359dab4a"
+  },
+  "frontend/.oxlintrc.json": {
+    "mtime": 1789648627.001784,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": "5e6e3cea3e89137071c142dd7835b0ef"
+  },
+  "frontend/package.json": {
+    "mtime": 1789648652.7603695,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0aedf63d06ac9fce36a4bc2f1c561ef3",
+    "semantic_hash": "0aedf63d06ac9fce36a4bc2f1c561ef3"
+  },
+  "frontend/src/App.jsx": {
+    "mtime": 1789733197.4305208,
+    "seen": 1789889100.9049797,
+    "ast_hash": "f149b5555f3372a280cb0d37cfa46dd3",
+    "semantic_hash": "f149b5555f3372a280cb0d37cfa46dd3"
+  },
+  "frontend/src/api.js": {
+    "mtime": 1789722419.7310355,
+    "seen": 1789889100.9049797,
+    "ast_hash": "98a4ca5b519eda83ac5cc9d21bd1e472",
+    "semantic_hash": "98a4ca5b519eda83ac5cc9d21bd1e472"
+  },
+  "frontend/src/components/BatchTableReview.jsx": {
+    "mtime": 1789659063.1218376,
+    "seen": 1789889100.9049797,
+    "ast_hash": "d90735d3e22443ddd6871eca5b21c12f",
+    "semantic_hash": "d90735d3e22443ddd6871eca5b21c12f"
+  },
+  "frontend/src/components/CompletionSummary.jsx": {
+    "mtime": 1789658682.9974232,
+    "seen": 1789889100.9049797,
+    "ast_hash": "87d1deea5f53e2248ac54dcb40f8d019",
+    "semantic_hash": "87d1deea5f53e2248ac54dcb40f8d019"
+  },
+  "frontend/src/components/ConflictModal.jsx": {
+    "mtime": 1789658701.3548017,
+    "seen": 1789889100.9049797,
+    "ast_hash": "9a0d08d794bfffd47e22b1d72830c8cc",
+    "semantic_hash": "9a0d08d794bfffd47e22b1d72830c8cc"
+  },
+  "frontend/src/components/ExportModal.jsx": {
+    "mtime": 1789726988.8576052,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5f0a28d66ccd0c12e1802ce8174971bd",
+    "semantic_hash": "5f0a28d66ccd0c12e1802ce8174971bd"
+  },
+  "frontend/src/components/Navbar.jsx": {
+    "mtime": 1789722625.7957602,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2c6fd758dbdd12dd468e8df403d1ed1f",
+    "semantic_hash": "2c6fd758dbdd12dd468e8df403d1ed1f"
+  },
+  "frontend/src/components/ReviewEditor.jsx": {
+    "mtime": 1789722592.8417885,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7719692c8d16fbaf9e95017f315c06bd",
+    "semantic_hash": "7719692c8d16fbaf9e95017f315c06bd"
+  },
+  "frontend/src/components/UploadQueue.jsx": {
+    "mtime": 1789659038.2453544,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8b513db548b7bc485cada6ae2c933450",
+    "semantic_hash": "8b513db548b7bc485cada6ae2c933450"
+  },
+  "frontend/src/main.jsx": {
+    "mtime": 1789648627.0134041,
+    "seen": 1789889100.9049797,
+    "ast_hash": "e13723e2574429d9a6d849727e3ff695",
+    "semantic_hash": "e13723e2574429d9a6d849727e3ff695"
+  },
+  "frontend/vercel.json": {
+    "mtime": 1789720947.9446707,
+    "seen": 1789889100.9049797,
+    "ast_hash": "6411d2fbb5f0e00aaff0ca0ded84e0b6",
+    "semantic_hash": "6411d2fbb5f0e00aaff0ca0ded84e0b6"
+  },
+  "frontend/vite.config.js": {
+    "mtime": 1789648729.3025837,
+    "seen": 1789889100.9049797,
+    "ast_hash": "6fe85e31f8581b631e1a9a2e6b91c525",
+    "semantic_hash": "6fe85e31f8581b631e1a9a2e6b91c525"
+  },
+  "README.md": {
+    "mtime": 1789648824.8948543,
+    "seen": 1789889100.9049797,
+    "ast_hash": "4ae35e5677a2637d23326505c07703e4",
+    "semantic_hash": "4ae35e5677a2637d23326505c07703e4"
+  },
+  "backend/requirements.txt": {
+    "mtime": 1789720250.9430766,
+    "seen": 1789889100.9049797,
+    "ast_hash": "d4245120bc10caabee1c56ca243ad477",
+    "semantic_hash": "d4245120bc10caabee1c56ca243ad477"
+  },
+  "frontend/README.md": {
+    "mtime": 1789648627.001784,
+    "seen": 1789889100.9049797,
+    "ast_hash": "75eb386f17caf77fd6fe3ce1d90968ee",
+    "semantic_hash": "75eb386f17caf77fd6fe3ce1d90968ee"
+  },
+  "frontend/index.html": {
+    "mtime": 1789658447.38383,
+    "seen": 1789889100.9049797,
+    "ast_hash": "77e111e1f968debbda0933117877234c",
+    "semantic_hash": "77e111e1f968debbda0933117877234c"
+  },
+  "graphify-out/converted/11d453ea-7983-43a3-ab0e-f66556fc618a_test_c22b69bb.md": {
+    "mtime": 1789887647.603102,
+    "seen": 1789889100.9049797,
+    "ast_hash": "393832db49662892df05a048847ddf31",
+    "semantic_hash": "393832db49662892df05a048847ddf31"
+  },
+  "graphify-out/converted/to_follow_f785e013.md": {
+    "mtime": 1789887649.4224222,
+    "seen": 1789889100.9049797,
+    "ast_hash": "e86bb3a2e19e604eb5822791de7b3812",
+    "semantic_hash": "e86bb3a2e19e604eb5822791de7b3812"
+  },
+  "render.yaml": {
+    "mtime": 1789722379.2497745,
+    "seen": 1789889100.9049797,
+    "ast_hash": "48f5261c6f7b0414c17758322fedec0e",
+    "semantic_hash": "48f5261c6f7b0414c17758322fedec0e"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_10.jpg": {
+    "mtime": 1789659927.077021,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_11.png": {
+    "mtime": 1789659927.077021,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_12.jpg": {
+    "mtime": 1789659927.077021,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_4.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_5.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_6.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_7.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_8.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Attendance/attendance_9.png": {
+    "mtime": 1789659927.077021,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Event_Poster/poster_1.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Photos/photo_2.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/07915737-0eb6-4bf6-929e-510196378110/Photos/photo_3.jpg": {
+    "mtime": 1789659927.072853,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_10.jpg": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_11.png": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_12.jpg": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_4.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_5.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_6.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_7.jpg": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_8.jpg": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Attendance/attendance_9.png": {
+    "mtime": 1789659790.0782063,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Event_Poster/poster_1.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Photos/photo_2.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/1153cf20-e20f-4fc9-bd41-5c680651ef07/Photos/photo_3.jpg": {
+    "mtime": 1789659790.075236,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_10.jpg": {
+    "mtime": 1789694174.8840213,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_11.png": {
+    "mtime": 1789694174.88502,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_12.jpg": {
+    "mtime": 1789694174.88502,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_4.jpg": {
+    "mtime": 1789694174.8810198,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_5.jpg": {
+    "mtime": 1789694174.8820217,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_6.jpg": {
+    "mtime": 1789694174.8820217,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_7.jpg": {
+    "mtime": 1789694174.8830197,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_8.jpg": {
+    "mtime": 1789694174.8830197,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Attendance/attendance_9.png": {
+    "mtime": 1789694174.8840213,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Event_Poster/poster_1.jpg": {
+    "mtime": 1789694174.8800187,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Photos/photo_2.jpg": {
+    "mtime": 1789694174.8800187,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/11d453ea-7983-43a3-ab0e-f66556fc618a/Photos/photo_3.jpg": {
+    "mtime": 1789694174.8810198,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_10.jpg": {
+    "mtime": 1789654160.287151,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_11.png": {
+    "mtime": 1789654160.287151,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_12.jpg": {
+    "mtime": 1789654160.2875583,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_4.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_5.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_6.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_7.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_8.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Attendance/attendance_9.png": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Event_Poster/poster_1.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Photos/photo_2.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/35701103-bee7-4485-adb7-4bbea4b785ea/Photos/photo_3.jpg": {
+    "mtime": 1789654160.2832425,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_10.jpg": {
+    "mtime": 1789657731.8702426,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_11.png": {
+    "mtime": 1789657731.8702426,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_12.jpg": {
+    "mtime": 1789657731.8702426,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_4.jpg": {
+    "mtime": 1789657731.8671906,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_5.jpg": {
+    "mtime": 1789657731.8671906,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_6.jpg": {
+    "mtime": 1789657731.8671906,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_7.jpg": {
+    "mtime": 1789657731.8691819,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_8.jpg": {
+    "mtime": 1789657731.8691819,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Attendance/attendance_9.png": {
+    "mtime": 1789657731.8691819,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Event_Poster/poster_1.jpg": {
+    "mtime": 1789657731.8630931,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Photos/photo_2.jpg": {
+    "mtime": 1789657731.8671906,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/4b6ae0e8-933e-407a-b531-2d120c08542d/Photos/photo_3.jpg": {
+    "mtime": 1789657731.8671906,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_10.jpg": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_11.png": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_12.jpg": {
+    "mtime": 1789655830.7137592,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_4.jpg": {
+    "mtime": 1789655830.7108965,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_5.jpg": {
+    "mtime": 1789655830.7108965,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_6.jpg": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_7.jpg": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_8.jpg": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Attendance/attendance_9.png": {
+    "mtime": 1789655830.7115228,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Event_Poster/poster_1.jpg": {
+    "mtime": 1789655830.7085211,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Photos/photo_2.jpg": {
+    "mtime": 1789655830.7085211,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/5806a195-b20a-48ab-857a-de294eeeaa42/Photos/photo_3.jpg": {
+    "mtime": 1789655830.7085211,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_10.jpg": {
+    "mtime": 1789659999.3036397,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_11.png": {
+    "mtime": 1789659999.3036397,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_12.jpg": {
+    "mtime": 1789659999.3036397,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_4.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_5.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_6.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_7.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_8.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Attendance/attendance_9.png": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Event_Poster/poster_1.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Photos/photo_2.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/6c23b7be-9346-48b8-b3d5-22f5d6395e6a/Photos/photo_3.jpg": {
+    "mtime": 1789659999.299428,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_10.jpg": {
+    "mtime": 1789660032.7376988,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_11.png": {
+    "mtime": 1789660032.7376988,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_12.jpg": {
+    "mtime": 1789660032.7376988,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_4.jpg": {
+    "mtime": 1789660032.7334971,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_5.jpg": {
+    "mtime": 1789660032.7334971,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_6.jpg": {
+    "mtime": 1789660032.7368119,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_7.jpg": {
+    "mtime": 1789660032.7368119,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_8.jpg": {
+    "mtime": 1789660032.7376988,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Attendance/attendance_9.png": {
+    "mtime": 1789660032.7376988,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Event_Poster/poster_1.jpg": {
+    "mtime": 1789660032.7334971,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Photos/photo_2.jpg": {
+    "mtime": 1789660032.7334971,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/81a4610a-6a02-45c7-9757-8b63e2ab077a/Photos/photo_3.jpg": {
+    "mtime": 1789660032.7334971,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_10.jpg": {
+    "mtime": 1789654214.474753,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_11.png": {
+    "mtime": 1789654214.474753,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_12.jpg": {
+    "mtime": 1789654214.4758115,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_4.jpg": {
+    "mtime": 1789654214.4721124,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_5.jpg": {
+    "mtime": 1789654214.4721124,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_6.jpg": {
+    "mtime": 1789654214.4721124,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_7.jpg": {
+    "mtime": 1789654214.4731185,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_8.jpg": {
+    "mtime": 1789654214.4731185,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Attendance/attendance_9.png": {
+    "mtime": 1789654214.474753,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Event_Poster/poster_1.jpg": {
+    "mtime": 1789654214.4711013,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Photos/photo_2.jpg": {
+    "mtime": 1789654214.4711013,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/892b7208-26ef-4bb2-bb47-22a90fa1eb96/Photos/photo_3.jpg": {
+    "mtime": 1789654214.4716392,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_10.jpg": {
+    "mtime": 1789652539.2349837,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_11.png": {
+    "mtime": 1789652539.2349837,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_12.jpg": {
+    "mtime": 1789652539.2349837,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_4.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_5.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_6.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_7.jpg": {
+    "mtime": 1789652539.2338662,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_8.jpg": {
+    "mtime": 1789652539.2338662,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Attendance/attendance_9.png": {
+    "mtime": 1789652539.2346177,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Event_Poster/poster_1.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Photos/photo_2.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/c40d2d31-0cb3-4e85-9745-92c0be4c7c80/Photos/photo_3.jpg": {
+    "mtime": 1789652539.2313497,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_10.jpg": {
+    "mtime": 1789648840.8250163,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_11.png": {
+    "mtime": 1789648840.8250163,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_12.jpg": {
+    "mtime": 1789648840.8250163,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_4.jpg": {
+    "mtime": 1789648840.8217127,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_5.jpg": {
+    "mtime": 1789648840.8217127,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_6.jpg": {
+    "mtime": 1789648840.82349,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_7.jpg": {
+    "mtime": 1789648840.82349,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_8.jpg": {
+    "mtime": 1789648840.82349,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Attendance/attendance_9.png": {
+    "mtime": 1789648840.82349,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Event_Poster/poster_1.jpg": {
+    "mtime": 1789648840.8217127,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Photos/photo_2.jpg": {
+    "mtime": 1789648840.8217127,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/e6b85d47-ab30-4898-9141-489c78db7790/Photos/photo_3.jpg": {
+    "mtime": 1789648840.8217127,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_10.jpg": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_11.png": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_12.jpg": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_4.jpg": {
+    "mtime": 1789650524.9051933,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_5.jpg": {
+    "mtime": 1789650524.9063084,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_6.jpg": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_7.jpg": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_8.jpg": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Attendance/attendance_9.png": {
+    "mtime": 1789650524.9067907,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Event_Poster/poster_1.jpg": {
+    "mtime": 1789650524.9051933,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Photos/photo_2.jpg": {
+    "mtime": 1789650524.9051933,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/ec12818e-d545-44ac-bf29-dbab88ff348e/Photos/photo_3.jpg": {
+    "mtime": 1789650524.9051933,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_10.jpg": {
+    "mtime": 1789660132.9149024,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_11.png": {
+    "mtime": 1789660132.9149024,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_12.jpg": {
+    "mtime": 1789660132.9149024,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_4.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_5.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_6.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_7.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_8.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Attendance/attendance_9.png": {
+    "mtime": 1789660132.9149024,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Event_Poster/poster_1.jpg": {
+    "mtime": 1789660132.9114895,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Photos/photo_2.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/extracted/ff3cbdd5-58d8-4a3e-8a24-907229b661d0/Photos/photo_3.jpg": {
+    "mtime": 1789660132.9125006,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/test_img/Attendance/attendance_10.jpg": {
+    "mtime": 1789653741.355824,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/test_img/Attendance/attendance_11.png": {
+    "mtime": 1789653741.356329,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/test_img/Attendance/attendance_12.jpg": {
+    "mtime": 1789653741.356329,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/test_img/Attendance/attendance_4.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/test_img/Attendance/attendance_5.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/test_img/Attendance/attendance_6.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/test_img/Attendance/attendance_7.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/test_img/Attendance/attendance_8.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/test_img/Attendance/attendance_9.png": {
+    "mtime": 1789653741.355824,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/test_img/Event_Poster/poster_1.jpg": {
+    "mtime": 1789653741.3524277,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/test_img/Photos/photo_2.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/test_img/Photos/photo_3.jpg": {
+    "mtime": 1789653741.354031,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "backend/temp/test_out/Attendance/attendance_10.jpg": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "58749187c150b28c666c198d0e8ff27e",
+    "semantic_hash": "58749187c150b28c666c198d0e8ff27e"
+  },
+  "backend/temp/test_out/Attendance/attendance_11.png": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57",
+    "semantic_hash": "bfbd8ddf9c846e1f985e44f63eaa3e57"
+  },
+  "backend/temp/test_out/Attendance/attendance_12.jpg": {
+    "mtime": 1789652633.1833584,
+    "seen": 1789889100.9049797,
+    "ast_hash": "db94afd71ecdef3ee2332c15f1be29a8",
+    "semantic_hash": "db94afd71ecdef3ee2332c15f1be29a8"
+  },
+  "backend/temp/test_out/Attendance/attendance_4.jpg": {
+    "mtime": 1789652633.180142,
+    "seen": 1789889100.9049797,
+    "ast_hash": "0290a9e56360cb83afe7fc5a5eb84ffd",
+    "semantic_hash": "0290a9e56360cb83afe7fc5a5eb84ffd"
+  },
+  "backend/temp/test_out/Attendance/attendance_5.jpg": {
+    "mtime": 1789652633.180142,
+    "seen": 1789889100.9049797,
+    "ast_hash": "8250f679a0d53d9e06a74203a6c77a38",
+    "semantic_hash": "8250f679a0d53d9e06a74203a6c77a38"
+  },
+  "backend/temp/test_out/Attendance/attendance_6.jpg": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "264505d9268b3be2a0f8e676d5d0ec0f",
+    "semantic_hash": "264505d9268b3be2a0f8e676d5d0ec0f"
+  },
+  "backend/temp/test_out/Attendance/attendance_7.jpg": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "5680545ba5eeeab0742f04c08284f74c",
+    "semantic_hash": "5680545ba5eeeab0742f04c08284f74c"
+  },
+  "backend/temp/test_out/Attendance/attendance_8.jpg": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "1855f9efa2f7ba88cc32a17a31592cc8",
+    "semantic_hash": "1855f9efa2f7ba88cc32a17a31592cc8"
+  },
+  "backend/temp/test_out/Attendance/attendance_9.png": {
+    "mtime": 1789652633.1818485,
+    "seen": 1789889100.9049797,
+    "ast_hash": "2b7eaa2ec896ef29500a637ef325e07b",
+    "semantic_hash": "2b7eaa2ec896ef29500a637ef325e07b"
+  },
+  "backend/temp/test_out/Event_Poster/poster_1.jpg": {
+    "mtime": 1789652633.180142,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7b13b7de893a8f825e5dfa02a9082a2f",
+    "semantic_hash": "7b13b7de893a8f825e5dfa02a9082a2f"
+  },
+  "backend/temp/test_out/Photos/photo_2.jpg": {
+    "mtime": 1789652633.180142,
+    "seen": 1789889100.9049797,
+    "ast_hash": "53eb6abe501db4db46e1571da0e704c2",
+    "semantic_hash": "53eb6abe501db4db46e1571da0e704c2"
+  },
+  "backend/temp/test_out/Photos/photo_3.jpg": {
+    "mtime": 1789652633.180142,
+    "seen": 1789889100.9049797,
+    "ast_hash": "13d5655e1d27a7bc47697c5f373f40e8",
+    "semantic_hash": "13d5655e1d27a7bc47697c5f373f40e8"
+  },
+  "frontend/public/favicon.svg": {
+    "mtime": 1789648627.001784,
+    "seen": 1789889100.9049797,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": "7e840862161341271697daa99a40d76b"
+  },
+  "frontend/public/icons.svg": {
+    "mtime": 1789648627.0113294,
+    "seen": 1789889100.9049797,
+    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
+    "semantic_hash": "3b4fcfcf393eca4d264dca4a4663bc37"
+  },
+  "frontend/src/assets/hero.png": {
+    "mtime": 1789648627.0134041,
+    "seen": 1789889100.9049797,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": "aead493361b27e7510691c5d7072dfc1"
+  },
+  "frontend/src/assets/react.svg": {
+    "mtime": 1789648627.0134041,
+    "seen": 1789889100.9049797,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "frontend/src/assets/vite.svg": {
+    "mtime": 1789648627.0134041,
+    "seen": 1789889100.9049797,
+    "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": "9960a24288958394ac50e57ff638b036"
+  }
+}

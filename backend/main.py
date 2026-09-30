@@ -527,6 +527,26 @@ def get_approved_documents(request: Request, response: Response):
     ]
     return {"approved_documents": approved, "count": len(approved)}
 
+@app.get("/api/review/approved/images")
+def get_approved_images(request: Request, response: Response):
+    """Returns all images from all approved documents, for pre-upload selection."""
+    session = get_or_create_session(request, response)
+    result = []
+    for d in session["documents"].values():
+        if d["status"] == "approved":
+            event_name = (d.get("fields") or {}).get("general_information", {}).get("title") or d["filename"]
+            for img in d.get("images", []):
+                result.append({
+                    "doc_id": d["id"],
+                    "event_name": event_name,
+                    "img_id": img["id"],
+                    "filename": img["filename"],
+                    "category": img["category"],
+                    "web_url": img["web_url"],
+                    "local_path": img.get("local_path", "")
+                })
+    return {"images": result, "count": len(result)}
+
 # ----------------- Routes: Export & Conflict Resolution -----------------
 
 @app.get("/api/export/system-locations")
@@ -803,6 +823,7 @@ def commit_sheets_export(payload: SheetsCommitRequest, request: Request, respons
 class DriveExportRequest(BaseModel):
     account: str = "primary"
     year: str = "2026"
+    selected_image_ids: Optional[List[str]] = None  # list of "doc_id:img_id" strings; None = all
 
 @app.post("/api/export/google/drive/images")
 def export_images_to_drive(payload: DriveExportRequest, request: Request, response: Response):
@@ -815,6 +836,11 @@ def export_images_to_drive(payload: DriveExportRequest, request: Request, respon
     if not approved_docs:
         raise HTTPException(status_code=400, detail="No approved documents found in your current session.")
 
+    # Build a lookup set of selected IDs if provided
+    selected_set = None
+    if payload.selected_image_ids is not None:
+        selected_set = set(payload.selected_image_ids)  # each is "doc_id:img_id"
+
     creds = google_service.get_credentials_from_dict(auth_data)
     drive_results = []
 
@@ -823,6 +849,13 @@ def export_images_to_drive(payload: DriveExportRequest, request: Request, respon
             images = doc.get("images", [])
             if not images:
                 continue
+
+            # Filter to only selected images when a selection was provided
+            if selected_set is not None:
+                images = [img for img in images if f"{doc['id']}:{img['id']}" in selected_set]
+            if not images:
+                continue
+
             event_name = doc.get("fields", {}).get("general_information", {}).get("title") or doc["filename"]
             res = google_service.upload_images_to_drive(creds, event_name, images, year=payload.year)
             drive_results.append({

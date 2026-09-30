@@ -31,7 +31,7 @@ export default function BatchTableReview({ documents, onSelectDoc, onApproveAll,
           {readyCount > 0 && (
             <button
               onClick={onApproveAll}
-              className="flex items-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 text-gray-700 text-sm font-semibold px-3.5 py-1.5 rounded shadow-sm transition-colors"
             >
               <CheckCheck className="w-4 h-4 text-green-700" />
               Approve All ({readyCount})
@@ -40,9 +40,9 @@ export default function BatchTableReview({ documents, onSelectDoc, onApproveAll,
           <button
             disabled={approvedCount === 0}
             onClick={onProceedToExport}
-            className="flex items-center gap-1.5 bg-[#1a3a5c] hover:bg-[#14304f] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-1.5 rounded shadow-sm transition-colors"
+            className="inline-flex items-center gap-1.5 bg-[#1a3a5c] hover:bg-[#14304f] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-1.5 rounded shadow-sm transition-colors"
           >
-            Export Approved Records ({approvedCount})
+            Export Approved ({approvedCount})
           </button>
         </div>
       </div>
@@ -101,10 +101,10 @@ export default function BatchTableReview({ documents, onSelectDoc, onApproveAll,
                     <td className="py-3 px-4 text-right whitespace-nowrap">
                       <button
                         onClick={() => onSelectDoc(doc.id)}
-                        className="flex items-center gap-1.5 ml-auto text-sm font-medium text-[#1a3a5c] hover:text-[#0f2640] hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1a3a5c] hover:text-white hover:bg-[#1a3a5c] border border-[#1a3a5c] px-2.5 py-1 rounded transition-colors ml-auto"
                       >
-                        <Eye className="w-4 h-4" />
-                        {isApproved ? 'View/Edit' : 'Review'}
+                        <Eye className="w-3.5 h-3.5" />
+                        {isApproved ? 'View / Edit' : 'Review'}
                       </button>
                     </td>
                   </tr>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   FileSpreadsheet, HardDrive, Download, Eye, ExternalLink,
-  Check, AlertCircle, X, Loader2, ChevronRight, FilePlus,
-  UploadCloud, FileCheck
+  Check, AlertCircle, X, Loader2, FilePlus,
+  UploadCloud, FileCheck, Image as ImageIcon, CheckSquare, Square, ChevronDown
 } from 'lucide-react';
-import { apiFetch } from '../api';
+import { apiFetch, apiUrl } from '../api';
 
 export default function ExportModal({
   isOpen,
@@ -18,7 +18,7 @@ export default function ExportModal({
   const [activeTab, setActiveTab] = useState('local');
 
   // Local file state
-  const [localMode, setLocalMode] = useState('append'); // 'append' | 'new'
+  const [localMode, setLocalMode] = useState('append');
   const [existingFile, setExistingFile] = useState(null);
   const [localFilename, setLocalFilename] = useState('Activity_Reports_Export');
   const [localFileType, setLocalFileType] = useState('xlsx');
@@ -35,9 +35,13 @@ export default function ExportModal({
 
   // Drive state
   const [driveYear, setDriveYear] = useState(String(new Date().getFullYear()));
+  const [driveImages, setDriveImages] = useState([]); // [{doc_id, img_id, filename, category, web_url, event_name}]
+  const [selectedImageKeys, setSelectedImageKeys] = useState(new Set()); // "doc_id:img_id"
+  const [driveImagesLoading, setDriveImagesLoading] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ── Load existing sheets when needed ──
   useEffect(() => {
     if (activeTab === 'sheets' && sheetsDestType === 'existing' && authStatus?.is_authenticated) {
       apiFetch(`/api/export/google/sheets/list?account=${sheetsAccount}`)
@@ -49,6 +53,23 @@ export default function ExportModal({
         .catch(err => console.error(err));
     }
   }, [activeTab, sheetsDestType, sheetsAccount, authStatus]);
+
+  // ── Load drive images when Drive tab opens ──
+  useEffect(() => {
+    if (activeTab === 'drive' && authStatus?.is_authenticated) {
+      setDriveImagesLoading(true);
+      apiFetch('/api/review/approved/images')
+        .then(res => res.json())
+        .then(data => {
+          const imgs = data.images || [];
+          setDriveImages(imgs);
+          // Select all by default
+          setSelectedImageKeys(new Set(imgs.map(img => `${img.doc_id}:${img.img_id}`)));
+        })
+        .catch(err => console.error(err))
+        .finally(() => setDriveImagesLoading(false));
+    }
+  }, [activeTab, authStatus]);
 
   if (!isOpen) return null;
 
@@ -130,16 +151,47 @@ export default function ExportModal({
   const handleCommitDrive = async () => {
     setIsSubmitting(true);
     try {
-      await onExportDriveImages({ account: sheetsAccount, year: driveYear });
+      await onExportDriveImages({
+        account: sheetsAccount,
+        year: driveYear,
+        selected_image_ids: [...selectedImageKeys]
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ── Drive image selection helpers ──
+  const toggleImage = (key) => {
+    setSelectedImageKeys(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const selectAll = () => setSelectedImageKeys(new Set(driveImages.map(img => `${img.doc_id}:${img.img_id}`)));
+  const selectNone = () => setSelectedImageKeys(new Set());
+
+  // Group images by event for display
+  const imagesByEvent = driveImages.reduce((acc, img) => {
+    const key = img.event_name || img.doc_id;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(img);
+    return acc;
+  }, {});
+
+  const CATEGORY_COLORS = {
+    Event_Poster: 'bg-purple-100 text-purple-800 border-purple-300',
+    Photos: 'bg-blue-100 text-blue-800 border-blue-300',
+    Attendance: 'bg-orange-100 text-orange-800 border-orange-300',
+  };
+
   const TABS = [
-    { id: 'local', label: 'Local File (Save to My PC)', icon: Download },
+    { id: 'local', label: 'Local File', icon: Download },
     { id: 'sheets', label: 'Google Sheets', icon: FileSpreadsheet },
-    { id: 'drive', label: 'Google Drive Images', icon: HardDrive },
+    { id: 'drive', label: 'Google Drive', icon: HardDrive },
   ];
 
   const AuthRequired = () => (
@@ -234,7 +286,7 @@ export default function ExportModal({
                 </div>
               </div>
 
-              {/* Append Mode: Choose file from system */}
+              {/* Append Mode */}
               {localMode === 'append' && (
                 <div className="space-y-3">
                   <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
@@ -274,7 +326,7 @@ export default function ExportModal({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="btn-secondary text-[11px] py-1 shrink-0"
+                        className="text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 px-3 py-1.5 rounded transition-colors shrink-0"
                       >
                         Change File
                       </button>
@@ -289,8 +341,10 @@ export default function ExportModal({
                     type="button"
                     onClick={handleCommitLocal}
                     disabled={!existingFile}
-                    className={`w-full justify-center py-2.5 text-xs font-semibold ${
-                      existingFile ? 'btn-primary' : 'bg-gray-200 text-gray-400 cursor-not-allowed rounded'
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded font-semibold text-xs transition-colors ${
+                      existingFile
+                        ? 'bg-[#1a3a5c] hover:bg-[#14304f] text-white shadow-sm'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}
                   >
                     <Download className="w-4 h-4" />
@@ -299,7 +353,7 @@ export default function ExportModal({
                 </div>
               )}
 
-              {/* New Mode: Specify filename and format */}
+              {/* New Mode */}
               {localMode === 'new' && (
                 <div className="space-y-4">
                   <div>
@@ -310,7 +364,7 @@ export default function ExportModal({
                       type="text"
                       value={localFilename}
                       onChange={(e) => setLocalFilename(e.target.value)}
-                      className="form-input font-mono"
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm text-gray-900 focus:outline-none focus:border-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c]/20 font-mono"
                     />
                   </div>
 
@@ -348,7 +402,7 @@ export default function ExportModal({
                   <button
                     type="button"
                     onClick={handleCommitLocal}
-                    className="w-full btn-primary justify-center py-2.5 text-xs font-semibold"
+                    className="w-full flex items-center justify-center gap-2 bg-[#1a3a5c] hover:bg-[#14304f] text-white py-2.5 px-4 rounded font-semibold text-xs shadow-sm transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     Create &amp; Save to My System
@@ -377,7 +431,7 @@ export default function ExportModal({
                       <select
                         value={sheetsAccount}
                         onChange={(e) => setSheetsAccount(e.target.value)}
-                        className="form-input w-auto ml-2"
+                        className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-[#1a3a5c] ml-2"
                       >
                         <option value="primary">Primary Account</option>
                         <option value="secondary">Secondary Account</option>
@@ -425,7 +479,7 @@ export default function ExportModal({
                           type="text"
                           value={newSheetTitle}
                           onChange={(e) => setNewSheetTitle(e.target.value)}
-                          className="form-input font-mono"
+                          className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm text-gray-900 focus:outline-none focus:border-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c]/20 font-mono"
                         />
                       </div>
                     ) : (
@@ -439,13 +493,13 @@ export default function ExportModal({
                             placeholder="Enter Google Spreadsheet ID (e.g. 1BxiMVs0XRA5...)"
                             value={selectedSheetId}
                             onChange={(e) => setSelectedSheetId(e.target.value)}
-                            className="form-input font-mono"
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm text-gray-900 focus:outline-none focus:border-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c]/20 font-mono"
                           />
                         ) : (
                           <select
                             value={selectedSheetId}
                             onChange={(e) => setSelectedSheetId(e.target.value)}
-                            className="form-input"
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm text-gray-900 focus:outline-none focus:border-[#1a3a5c]"
                           >
                             {existingSheets.map(s => (
                               <option key={s.id} value={s.id}>{s.name}</option>
@@ -461,7 +515,7 @@ export default function ExportModal({
                     <button
                       onClick={handlePreviewSheets}
                       disabled={previewLoading}
-                      className="btn-secondary"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 bg-white border border-gray-300 hover:border-gray-400 hover:bg-gray-50 px-3 py-1.5 rounded shadow-sm transition-colors disabled:opacity-50"
                     >
                       {previewLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
                       {previewLoading ? 'Loading preview…' : 'Preview Destination Layout'}
@@ -470,8 +524,8 @@ export default function ExportModal({
 
                   {sheetsPreview && (
                     <div className="border border-gray-200 rounded overflow-hidden">
-                      <div className="panel-header">
-                        <span className="panel-title">Destination Column Preview</span>
+                      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide">Destination Column Preview</span>
                       </div>
                       <div className="overflow-x-auto max-h-40">
                         <table className="text-[10px] border-collapse w-full bg-white">
@@ -499,7 +553,7 @@ export default function ExportModal({
                   <button
                     disabled={isSubmitting}
                     onClick={handleCommitSheets}
-                    className="w-full btn-success justify-center py-2 disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 bg-[#1e6641] hover:bg-[#185535] disabled:opacity-50 text-white py-2.5 px-4 rounded font-semibold text-xs shadow-sm transition-colors"
                   >
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                     {isSubmitting ? 'Writing to Sheets…' : 'Write to Google Sheets'}
@@ -516,8 +570,8 @@ export default function ExportModal({
                 <>
                   {/* Folder structure */}
                   <div className="border border-gray-200 rounded overflow-hidden">
-                    <div className="panel-header">
-                      <span className="panel-title">Drive Folder Architecture</span>
+                    <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
+                      <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide">Drive Folder Architecture</span>
                     </div>
                     <div className="p-3 font-mono text-[11px] text-gray-700 leading-relaxed bg-gray-50">
                       Activity Reports / {driveYear} / &#123;Event_Name&#125; /<br />
@@ -535,8 +589,98 @@ export default function ExportModal({
                       type="text"
                       value={driveYear}
                       onChange={(e) => setDriveYear(e.target.value)}
-                      className="form-input font-mono w-40"
+                      className="w-28 px-3 py-1.5 border border-gray-300 rounded bg-white text-sm text-gray-900 focus:outline-none focus:border-[#1a3a5c] font-mono"
                     />
+                  </div>
+
+                  {/* ── Image selection panel ── */}
+                  <div className="border border-gray-200 rounded overflow-hidden">
+                    <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-gray-500" />
+                        <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide">
+                          Select Images to Upload
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          ({selectedImageKeys.size} of {driveImages.length} selected)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={selectAll}
+                          className="text-[11px] font-medium text-[#1a3a5c] hover:underline"
+                        >
+                          All
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
+                          onClick={selectNone}
+                          className="text-[11px] font-medium text-gray-500 hover:underline"
+                        >
+                          None
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                      {driveImagesLoading ? (
+                        <div className="py-8 text-center text-gray-400 text-xs flex items-center justify-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Loading images…
+                        </div>
+                      ) : driveImages.length === 0 ? (
+                        <div className="py-8 text-center text-gray-400 text-xs">
+                          <ImageIcon className="w-7 h-7 mx-auto mb-2 text-gray-300" />
+                          No images found in approved documents.
+                        </div>
+                      ) : (
+                        Object.entries(imagesByEvent).map(([eventName, imgs]) => (
+                          <div key={eventName}>
+                            {/* Event group header */}
+                            <div className="px-3 py-1.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                              <span className="text-[11px] font-semibold text-gray-700 truncate">{eventName}</span>
+                              <span className="text-[10px] text-gray-400">({imgs.length} images)</span>
+                            </div>
+                            {/* Image rows */}
+                            {imgs.map(img => {
+                              const key = `${img.doc_id}:${img.img_id}`;
+                              const checked = selectedImageKeys.has(key);
+                              return (
+                                <div
+                                  key={key}
+                                  onClick={() => toggleImage(key)}
+                                  className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                                    checked ? 'bg-blue-50/40' : 'hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {/* Checkbox icon */}
+                                  {checked
+                                    ? <CheckSquare className="w-4 h-4 text-[#1a3a5c] shrink-0" />
+                                    : <Square className="w-4 h-4 text-gray-300 shrink-0" />
+                                  }
+                                  {/* Thumbnail */}
+                                  <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden shrink-0 border border-gray-200">
+                                    <img
+                                      src={apiUrl(img.web_url)}
+                                      alt={img.filename}
+                                      className="w-full h-full object-cover"
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                  {/* Filename + category */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-medium text-gray-800 truncate">{img.filename}</div>
+                                    <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium border rounded mt-0.5 ${CATEGORY_COLORS[img.category] || 'bg-gray-100 text-gray-600 border-gray-300'}`}>
+                                      {img.category.replace('_', ' ')}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
 
                   <p className="text-[11px] text-gray-500">
@@ -544,12 +688,15 @@ export default function ExportModal({
                   </p>
 
                   <button
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || selectedImageKeys.size === 0}
                     onClick={handleCommitDrive}
-                    className="w-full btn-primary justify-center py-2 disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 bg-[#1a3a5c] hover:bg-[#14304f] disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded font-semibold text-xs shadow-sm transition-colors"
                   >
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <HardDrive className="w-4 h-4" />}
-                    {isSubmitting ? 'Uploading Images…' : 'Upload Categorized Images to Google Drive'}
+                    {isSubmitting
+                      ? 'Uploading Images…'
+                      : `Upload ${selectedImageKeys.size} Selected Image${selectedImageKeys.size !== 1 ? 's' : ''} to Google Drive`
+                    }
                   </button>
                 </>
               )}

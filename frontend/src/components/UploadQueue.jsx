@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Upload, FileText, Trash2, Play, CheckCircle, Clock,
-  AlertCircle, Eye, Loader2, FolderOpen
+  AlertCircle, Eye, Loader2, FolderOpen, X
 } from 'lucide-react';
+import { API_BASE_URL } from '../api';
 
 function StatusBadge({ status }) {
   if (status === 'queued')
@@ -18,24 +19,73 @@ function StatusBadge({ status }) {
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300 rounded">{status}</span>;
 }
 
+/** Upload a batch of files with XHR progress tracking. */
+function useUploadWithProgress(onDone) {
+  const [progress, setProgress] = useState(null); // null = idle, 0-100 = uploading
+
+  const upload = (fileList) => {
+    if (!fileList || fileList.length === 0) return;
+    const formData = new FormData();
+    for (let i = 0; i < fileList.length; i++) {
+      formData.append('files', fileList[i]);
+    }
+
+    const sessionId = localStorage.getItem('activity_extractor_session_id');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_BASE_URL}/api/documents/upload`, true);
+    if (sessionId) xhr.setRequestHeader('x-session-id', sessionId);
+    xhr.withCredentials = true;
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        setProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      setProgress(null);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onDone();
+      } else {
+        alert('Upload failed: ' + xhr.statusText);
+      }
+    };
+
+    xhr.onerror = () => {
+      setProgress(null);
+      alert('Upload error. Please check your connection.');
+    };
+
+    setProgress(0);
+    xhr.send(formData);
+  };
+
+  return { progress, upload };
+}
+
 export default function UploadQueue({
   queue, onUploadFiles, onRemoveDoc, onStartExtraction, isProcessing, onSelectDoc
 }) {
   const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const { progress, upload } = useUploadWithProgress(onUploadFiles);
 
   const handleDrop = (e) => {
     e.preventDefault();
-    if (e.dataTransfer.files?.length > 0) onUploadFiles(e.dataTransfer.files);
+    setIsDragging(false);
+    if (e.dataTransfer.files?.length > 0) upload(e.dataTransfer.files);
   };
 
   const handleFileSelect = (e) => {
     if (e.target.files?.length > 0) {
-      onUploadFiles(e.target.files);
+      upload(e.target.files);
       e.target.value = '';
     }
   };
 
   const queuedCount = queue.filter(d => d.status === 'queued').length;
+  const isUploading = progress !== null;
 
   return (
     <div className="space-y-4">
@@ -53,26 +103,49 @@ export default function UploadQueue({
 
         {/* Drop zone */}
         <div
-          className="flex items-center gap-4 px-5 py-4 border-b border-dashed border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
-          onDragOver={(e) => e.preventDefault()}
+          className={`flex items-center gap-4 px-5 py-4 border-b border-dashed transition-colors cursor-pointer ${
+            isDragging
+              ? 'border-[#1a3a5c] bg-blue-50'
+              : 'border-gray-300 hover:bg-gray-50'
+          }`}
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
         >
           <input type="file" ref={fileInputRef} multiple accept=".docx,.doc,.pdf" onChange={handleFileSelect} className="hidden" />
-          <div className="w-10 h-10 border-2 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50 shrink-0">
-            <FolderOpen className="w-5 h-5 text-gray-400" />
+          <div className={`w-10 h-10 border-2 border-dashed rounded flex items-center justify-center bg-gray-50 shrink-0 ${isDragging ? 'border-[#1a3a5c]' : 'border-gray-300'}`}>
+            <FolderOpen className={`w-5 h-5 ${isDragging ? 'text-[#1a3a5c]' : 'text-gray-400'}`} />
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-700">Browse files or drag &amp; drop here</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-700">
+              {isUploading ? 'Uploading…' : 'Browse files or drag & drop here'}
+            </p>
             <p className="text-xs text-gray-500 mt-0.5">Activity report documents (.docx, .doc, .pdf)</p>
+
+            {/* ── Progress bar ── */}
+            {isUploading && (
+              <div className="mt-2 space-y-1">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#1a3a5c] rounded-full transition-all duration-200"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">{progress}% uploaded</p>
+              </div>
+            )}
           </div>
-          <button
-            type="button"
-            className="ml-auto bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-1.5 rounded shadow-sm transition-colors shrink-0"
-            onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-          >
-            Browse…
-          </button>
+
+          {!isUploading && (
+            <button
+              type="button"
+              className="ml-auto bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-1.5 rounded shadow-sm transition-colors shrink-0"
+              onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+            >
+              Browse…
+            </button>
+          )}
         </div>
 
         {/* Action bar */}
@@ -86,7 +159,7 @@ export default function UploadQueue({
               <button
                 disabled={isProcessing}
                 onClick={onStartExtraction}
-                className="flex items-center gap-2 bg-[#1a3a5c] hover:bg-[#14304f] disabled:opacity-50 text-white text-sm font-medium px-4 py-1.5 rounded shadow-sm transition-colors"
+                className="flex items-center gap-2 bg-[#1a3a5c] hover:bg-[#14304f] disabled:opacity-50 text-white text-sm font-semibold px-4 py-1.5 rounded shadow-sm transition-colors"
               >
                 {isProcessing
                   ? <><Loader2 className="w-4 h-4 animate-spin" />Processing…</>
@@ -138,22 +211,22 @@ export default function UploadQueue({
                       <StatusBadge status={doc.status} />
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2">
                         {doc.has_fields && (
                           <button
                             onClick={() => onSelectDoc(doc.id)}
-                            className="flex items-center gap-1.5 text-sm font-medium text-[#1a3a5c] hover:text-[#0f2640] hover:underline"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1a3a5c] hover:text-white hover:bg-[#1a3a5c] border border-[#1a3a5c] px-2.5 py-1 rounded transition-colors"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
                             Review
                           </button>
                         )}
                         <button
                           onClick={() => onRemoveDoc(doc.id)}
-                          className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 px-2 py-1 rounded transition-colors"
                           title="Remove from queue"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </td>

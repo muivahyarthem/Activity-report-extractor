@@ -217,6 +217,7 @@ def extract_from_pdf(file_path: str, output_image_dir: str) -> Dict[str, Any]:
     """
     Extracts text and images from PDF using pdfplumber & PyMuPDF.
     Excludes Feedback and Impact Analysis.
+    Uses a paragraph-level state machine (mirrors DOCX extractor) for multi-line fields.
     """
     os.makedirs(output_image_dir, exist_ok=True)
     poster_dir = os.path.join(output_image_dir, "Event_Poster")
@@ -260,7 +261,7 @@ def extract_from_pdf(file_path: str, output_image_dir: str) -> Dict[str, Any]:
         }
     }
 
-    # Extract tables & text with pdfplumber
+    # ── Pass 1: structured table extraction with pdfplumber ──
     all_text = ""
     if pdfplumber:
         with pdfplumber.open(file_path) as pdf:
@@ -274,7 +275,7 @@ def extract_from_pdf(file_path: str, output_image_dir: str) -> Dict[str, Any]:
                         if len(cells) < 2:
                             continue
 
-                        # Check 4-column mapping table
+                        # 4-column academic mapping table
                         if len(cells) >= 4:
                             first_col = cells[0].lower()
                             if "naac" in first_col:
@@ -302,42 +303,103 @@ def extract_from_pdf(file_path: str, output_image_dir: str) -> Dict[str, Any]:
                             extracted_data["general_information"]["type"] = val
                         elif re.search(r"^date", label):
                             extracted_data["general_information"]["date"] = val
-                        elif "time" in label:
+                        elif "time" in label and "title" not in label:
                             extracted_data["general_information"]["time"] = val
                         elif "venue" in label:
                             extracted_data["general_information"]["venue"] = val
                         elif "collab" in label or "sponsor" in label:
                             extracted_data["general_information"]["collaboration"] = val
-                        elif "name" in label or "speaker" in label:
+                        elif label == "name" or re.search(r"^speaker\s*name", label):
                             extracted_data["speaker_details"]["name"] = val
                         elif "title/position" in label or "designation" in label:
                             extracted_data["speaker_details"]["position"] = val
-                        elif "organization" in label:
+                        elif "organization" in label or "institution" in label or "affiliation" in label:
                             extracted_data["speaker_details"]["organization"] = val
                         elif "presentation" in label:
                             extracted_data["speaker_details"]["presentation_title"] = val
                         elif "type of participant" in label:
                             extracted_data["participant_profile"]["participant_type"] = val
-                        elif "no. of participant" in label:
+                        elif "no. of participant" in label or "number of participant" in label:
                             extracted_data["participant_profile"]["participant_count"] = val
                         elif "highlight" in label:
                             extracted_data["highlights"] = val
-                        elif "objective" in label or "takeaway" in label:
+                        elif "key objective" in label or "takeaway" in label or "outcomes" in label:
                             extracted_data["key_objectives"] = val
-                        elif "summary" in label and "feedback" not in label:
+                        elif ("summary of the activity" in label or
+                              (label.startswith("summary") and "feedback" not in label)):
                             extracted_data["summary"] = val
-                        elif "follow-up" in label:
-                            extracted_data["follow_up_plan"] = val
+                        elif "follow-up plan" in label or "follow up" in label:
+                            extracted_data["follow_up_plan"] = val if val else "None"
+                        elif "synopsis" in label:
+                            extracted_data["synopsis"] = val
                         elif "rapporteur" in label:
                             extracted_data["rapporteur_details"]["name"] = val
                         elif "email" in label and "contact" in label:
                             extracted_data["rapporteur_details"]["contact"] = val
 
+                # Accumulate full-page text for fallback paragraph parsing
                 p_text = page.extract_text()
                 if p_text:
                     all_text += "\n" + p_text
 
-    # Extract images using PyMuPDF (fitz)
+        # ── Pass 2: paragraph-level state machine (mirrors DOCX extractor) ──
+        # Handles multi-line text blocks not captured cleanly in tables.
+        SECTION_HEADERS = [
+            "title of the activity", "type of activity", "date", "time", "venue",
+            "collaboration", "sponsor", "speaker name", "speaker", "name",
+            "designation", "organization", "institution", "affiliation", "presentation",
+            "type of participant", "no. of participant", "number of participant",
+            "highlight", "key objective", "takeaway", "outcomes",
+            "summary of the activity", "summary", "follow-up plan", "follow up plan",
+            "synopsis", "rapporteur", "email", "contact",
+            "naac", "strategic", "graduate attribute",
+            "feedback", "impact", "event poster", "geo tagged", "photo", "attendance",
+        ]
+
+        def _is_section_header(text: str) -> bool:
+            t = text.lower().strip().rstrip(":")
+            return len(t) < 80 and any(h in t for h in SECTION_HEADERS)
+
+        def _flush_section(lbl: str, lns: list):
+            """Write buffered lines to the appropriate field if still empty."""
+            val = " ".join(lns).strip()
+            if not val or not lbl:
+                return
+            ll = lbl.lower()
+            if "synopsis" in ll and not extracted_data["synopsis"]:
+                extracted_data["synopsis"] = val
+            elif "highlight" in ll and not extracted_data["highlights"]:
+                extracted_data["highlights"] = val
+            elif ("key objective" in ll or "takeaway" in ll or "outcomes" in ll) and not extracted_data["key_objectives"]:
+                extracted_data["key_objectives"] = val
+            elif ("summary of the activity" in ll or (ll.startswith("summary") and "feedback" not in ll)) and not extracted_data["summary"]:
+                extracted_data["summary"] = val
+            elif ("follow-up plan" in ll or "follow up" in ll) and extracted_data["follow_up_plan"] == "None":
+                extracted_data["follow_up_plan"] = val if val else "None"
+            elif "rapporteur" in ll and not extracted_data["rapporteur_details"]["name"]:
+                extracted_data["rapporteur_details"]["name"] = val
+
+        current_label = None
+        current_lines: list = []
+
+        for line in (ln.strip() for ln in all_text.splitlines() if ln.strip()):
+            # Try "Label : Value" or "Label: Value" split
+            colon_match = re.split(r"\s*:\s*", line, maxsplit=1)
+            potential_label = colon_match[0].strip()
+            if len(colon_match) == 2 and _is_section_header(potential_label):
+                _flush_section(current_label, current_lines)
+                current_label = potential_label
+                current_lines = [colon_match[1].strip()] if colon_match[1].strip() else []
+            elif _is_section_header(line):
+                _flush_section(current_label, current_lines)
+                current_label = line.rstrip(":")
+                current_lines = []
+            elif current_label:
+                current_lines.append(line)
+
+        _flush_section(current_label, current_lines)
+
+    # ── Pass 3: extract images with PyMuPDF (fitz) ──
     images = []
     if fitz:
         pdf_doc = fitz.open(file_path)
@@ -351,6 +413,8 @@ def extract_from_pdf(file_path: str, output_image_dir: str) -> Dict[str, Any]:
                 base_image = pdf_doc.extract_image(xref)
                 image_bytes = base_image["image"]
                 ext = base_image["ext"]
+                if ext not in ["png", "jpg", "jpeg", "webp"]:
+                    ext = "png"
 
                 if img_idx == 1:
                     category = "Event_Poster"
